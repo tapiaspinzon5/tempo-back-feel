@@ -1,0 +1,7 @@
+git status
+
+AnalyticsBackend/node_modules
+AnalyticsBackend/.env
+
+DataBackend/node_modules
+DataBackend/.env
