@@ -74,21 +74,13 @@ let SpParamTable2 = (nameParam, colums, rows) => {
   }
 };
 
-let insertLobTable = [
+let insertCampaignTable = [
   {
-    name: "identTL",
-    type: TYPES.Int,
+    name: "nameLob",
+    type: TYPES.VarChar,
   },
   {
-    name: "case",
-    type: TYPES.Int,
-  },
-  {
-    name: "newTL",
-    type: TYPES.Int,
-  },
-  {
-    name: "newIdTeam",
+    name: "identPoc",
     type: TYPES.Int,
   },
   {
@@ -117,6 +109,17 @@ exports.parametros = (req, tipo) => {
         new SpParam("idcampaign", req.idcampaign, TYPES.Int),
       ]);
 
+    case "spInsertCampaign":
+      return parametrizacion([
+        new SpParam("ident", req.idccms, TYPES.Int),
+        new SpParam("nameCampaign", req.nameCampaign, TYPES.Int),
+        SpParamTable2("table", insertCampaignTable, req.rows),
+      ]);
+    case "spQueryUsersMD":
+      return parametrizacion([
+        new SpParam("ident", req.idccms, TYPES.Int),
+        new SpParam("Context", req.context, TYPES.Int),
+      ]);
     default:
       return null;
   }
