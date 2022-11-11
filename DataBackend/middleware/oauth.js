@@ -26,9 +26,10 @@ function login(req, res) {
         sameSite: "Strict",
       });
 
+      const data = result.data.data;
       const dataEncrypted = CryptoJS.AES.encrypt(
         JSON.stringify(data),
-        `secret key 123`
+        process.env.CRYPTOJS_SECRET
       ).toString();
       // responsep(1, req, res, data);
       responsep(1, req, res, dataEncrypted);
