@@ -74,23 +74,44 @@ let responsep = (tipo, req, res, resultado, cookie) => {
   });
 };
 
-// TODO:BORRAR ESTO !
-exports.uploadOpsM = async (req, res) => {
-  const { idccms, context, idLeader, cas, emails } = req.body;
+exports.createCampaign = async (req, res) => {
+  const { idccms, nameCampaign, lobsInfo } = req.body;
+  let i = 0;
 
-  sql
-    .query(
-      "spInsertOrganizationalUnit",
-      parametros(
-        { idccms, context, idLeader, cas },
-        "spInsertOrganizationalUnit"
-      )
-    )
-    .then(async (result) => {
-      responsep(1, req, res, result);
-    })
-    .catch((err) => {
-      console.log(err, "sp");
-      responsep(2, req, res, err);
+  try {
+    let rows = lobsInfo.map(({ name, idccms }) => {
+      i = i + 1;
+      return [name, idccms, i];
     });
+
+    // {
+    //   nameCampaign:"nombre de campaña",
+    //   lobInfo:[
+    //     {name:"lob1", idccms:"4468546"},
+    //     {name:"lob2", idccms:"4462685"},
+    //     {name:"lob3", idccms:"4472074"},
+    //     ETC...
+    //   ]
+    // }
+
+    sql
+      .query(
+        "spInsertCampaign",
+        parametros({ idccms, nameCampaign, rows }, "spInsertCampaign")
+      )
+      .then(async (result) => {
+        responsep(1, req, res, result);
+      })
+      .catch((err) => {
+        console.log(err, "sp");
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    console.log(error);
+    responsep(2, req, res, error);
+  }
+};
+
+exports.prueba = (req, res) => {
+  res.status(200).json({ body: req.body });
 };
