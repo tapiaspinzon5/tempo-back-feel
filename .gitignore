@@ -1,7 +1,10 @@
-git status
 
 AnalyticsBackend/node_modules
 AnalyticsBackend/.env
+AnalyticsBackend/.vscode
 
 DataBackend/node_modules
 DataBackend/.env
+DataBackend/.vscode
+
+.vscode
