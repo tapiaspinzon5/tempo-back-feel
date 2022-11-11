@@ -120,6 +120,8 @@ exports.parametros = (req, tipo) => {
         new SpParam("ident", req.idccms, TYPES.Int),
         new SpParam("Context", req.context, TYPES.Int),
       ]);
+    case "spQueryRoleUser":
+      return parametrizacion([new SpParam("ident", req.idccms, TYPES.Int)]);
     default:
       return null;
   }
