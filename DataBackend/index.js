@@ -55,7 +55,7 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(exceptionHandler);
 app.use(errorHandler);
-app.use(router);
+app.use("/api", router);
 
 routes(router);
 
