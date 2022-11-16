@@ -15,48 +15,54 @@ function login(req, res) {
     uri: req.originalUrl,
     size: req.headers["content-length"],
   };
-  redirect.post(url, "oauthlogin", data, null).then((result) => {
-    res.cookie("token1", req.csrfToken(), {
-      expires: new Date(Date.now() + 900000),
-      httpOnly: true,
-      path: "/",
-      secure: process.env.NODE_ENV !== "development",
-      sameSite: "Strict",
-    });
-
-    sql
-      .query(
-        "spQueryRoleUser",
-        parametros({ idccms: result.data.data.idccms }, "spQueryRoleUser")
-      )
-      .then((result2) => {
-        let data = {
-          nombre: result?.data.data?.nombre,
-          idccms: result?.data.data?.idccms,
-          userName: result?.data.data?.username,
-          token: result?.data.data?.token,
-          refreshToken: result?.data.data?.refreshToken,
-          role: result2[0]?.role,
-          numberLogins: result2[0]?.numberLogins,
-          idCampaign: result2[0]?.idCampaign,
-          nameCampaign: result2[0]?.nameCampaign,
-          idTeam: result2[0]?.idTeam,
-          nameTeam: result2[0]?.nameTeam,
-          lastLogin: result2[0]?.lastLogin,
-        };
-
-        const dataEncrypted = CryptoJS.AES.encrypt(
-          JSON.stringify(data),
-          process.env.CRYPTOJS_SECRET
-        ).toString();
-        // responsep(1, req, res, data);
-        responsep(1, req, res, dataEncrypted);
-      })
-      .catch((err) => {
-        console.log(err, "sp");
-        responsep(2, req, res, err);
+  redirect
+    .post(url, "oauthlogin", data, null)
+    .then((result) => {
+      res.cookie("token1", req.csrfToken(), {
+        expires: new Date(Date.now() + 900000),
+        httpOnly: true,
+        path: "/",
+        secure: process.env.NODE_ENV !== "development",
+        sameSite: "Strict",
       });
-  });
+
+      sql
+        .query(
+          "spQueryRoleUser",
+          parametros({ idccms: result.data.data.idccms }, "spQueryRoleUser")
+        )
+        .then((result2) => {
+          let data = {
+            nombre: result?.data.data?.nombre,
+            idccms: result?.data.data?.idccms,
+            userName: result?.data.data?.username,
+            token: result?.data.data?.token,
+            refreshToken: result?.data.data?.refreshToken,
+            role: result2[0]?.role,
+            numberLogins: result2[0]?.numberLogins,
+            idCampaign: result2[0]?.idCampaign,
+            nameCampaign: result2[0]?.nameCampaign,
+            idTeam: result2[0]?.idTeam,
+            nameTeam: result2[0]?.nameTeam,
+            lastLogin: result2[0]?.lastLogin,
+          };
+
+          const dataEncrypted = CryptoJS.AES.encrypt(
+            JSON.stringify(data),
+            process.env.CRYPTOJS_SECRET
+          ).toString();
+          // responsep(1, req, res, data);
+          responsep(1, req, res, dataEncrypted);
+        })
+        .catch((err) => {
+          console.log(err, "sp");
+          responsep(2, req, res, err);
+        });
+    })
+    .catch((err) => {
+      console.log(err, "sp");
+      responsep(2, req, res, err);
+    });
 }
 
 function refresh(req, res) {

@@ -89,6 +89,29 @@ let insertCampaignTable = [
   },
 ];
 
+let updateCampaignTable = [
+  {
+    name: "nameCampaign",
+    type: TYPES.VarChar,
+  },
+  {
+    name: "IdLob",
+    type: TYPES.Int,
+  },
+  {
+    name: "nameLob",
+    type: TYPES.VarChar,
+  },
+  {
+    name: "identPoc",
+    type: TYPES.Int,
+  },
+  {
+    name: "idRegistry",
+    type: TYPES.Int,
+  },
+];
+
 exports.parametros = (req, tipo) => {
   switch (tipo) {
     case "spUpdateRoleUser":
@@ -111,9 +134,23 @@ exports.parametros = (req, tipo) => {
 
     case "spInsertCampaign":
       return parametrizacion([
-        new SpParam("ident", req.idccms, TYPES.Int),
-        new SpParam("nameCampaign", req.nameCampaign, TYPES.Int),
+        new SpParam("ident", req.requestedBy, TYPES.Int),
+        new SpParam("nameCampaign", req.nameCampaign, TYPES.VarChar),
         SpParamTable2("table", insertCampaignTable, req.rows),
+      ]);
+    case "spUpdateCampaign":
+      return parametrizacion([
+        new SpParam("ident", req.requestedBy, TYPES.Int),
+        new SpParam("idCampaign", req.idCampaign, TYPES.Int),
+        SpParamTable2("table", updateCampaignTable, req.rows),
+      ]);
+    case "spQueryCampaignContent":
+      return parametrizacion([
+        new SpParam("ident", req.requestedBy, TYPES.Int),
+        new SpParam("context", req.context, TYPES.Int),
+        new SpParam("idcampaign", req.idCampaign, TYPES.Int),
+        new SpParam("idlob", req.idLob, TYPES.Int),
+        new SpParam("idLearningPlan", req.idLearningPlan, TYPES.Int),
       ]);
     case "spQueryUsersMD":
       return parametrizacion([
