@@ -75,7 +75,7 @@ let responsep = (tipo, req, res, resultado, cookie) => {
 };
 
 exports.createCampaign = async (req, res) => {
-  const { idccms, nameCampaign, lobsInfo } = req.body;
+  const { requestedBy, nameCampaign, lobsInfo } = req.body;
   let i = 0;
 
   try {
@@ -86,7 +86,7 @@ exports.createCampaign = async (req, res) => {
 
     // {
     //   nameCampaign:"nombre de campaña",
-    //   lobInfo:[
+    //   lobsInfo:[
     //     {name:"lob1", idccms:"4468546"},
     //     {name:"lob2", idccms:"4462685"},
     //     {name:"lob3", idccms:"4472074"},
@@ -97,7 +97,7 @@ exports.createCampaign = async (req, res) => {
     sql
       .query(
         "spInsertCampaign",
-        parametros({ idccms, nameCampaign, rows }, "spInsertCampaign")
+        parametros({ requestedBy, nameCampaign, rows }, "spInsertCampaign")
       )
       .then(async (result) => {
         responsep(1, req, res, result);
@@ -112,6 +112,44 @@ exports.createCampaign = async (req, res) => {
   }
 };
 
-exports.prueba = (req, res) => {
-  res.status(200).json({ body: req.body });
+exports.updateCampaign = async (req, res) => {
+  const { requestedBy, idCampaign, nameCampaign, lobsInfo } = req.body;
+  let i = 0;
+
+  try {
+    let rows = lobsInfo.map(({ id, name, idccms }) => {
+      i = i + 1;
+      return [nameCampaign, id, name, idccms, i];
+    });
+
+    // {
+    //   "nameCampaign":"nombre de campaña",
+    //   "idCampaign":1,
+    //   "lobsInfo":[
+    //     {"id":1, "name":"lob1", "idccms":"4468546"},
+    //     {"id":2,"name":"lob2", "idccms":"4462685"},
+    //     {"id":3, "name":"lob3", "idccms":"4472074"},
+    //   ]
+    // }
+
+    sql
+      .query(
+        "spUpdateCampaign",
+        parametros({ requestedBy, idCampaign, rows }, "spUpdateCampaign")
+      )
+      .then(async (result) => {
+        responsep(1, req, res, result);
+      })
+      .catch((err) => {
+        console.log(err, "sp");
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    console.log(error);
+    responsep(2, req, res, error);
+  }
 };
+
+// exports.prueba = (req, res) => {
+//   res.status(200).json({ body: req.body });
+// };

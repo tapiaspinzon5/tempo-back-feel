@@ -25,6 +25,14 @@ module.exports = (router) => {
     routes.createCampaign
   );
 
+  // update campaign
+  router.post(
+    "/su/updatecampaign",
+    oauth.oauthOther,
+    decryptBody,
+    routes.updateCampaign
+  );
+
   // router.post("/prueba", decryptBody, routes.prueba);
 
   //CRUD
@@ -35,6 +43,7 @@ module.exports = (router) => {
   MapSpRouter("/sqldelete", "spDeleteCentral");
   MapSpRouter("/sqldelete", "spDeleteCentral");
   MapSpRouter("/getagentesinfomd", "spQueryUsersMD");
+  MapSpRouter("/su/getcampaigncontent", "spQueryCampaignContent");
 
   function MapSpRouter(route, spName) {
     router.post(route, oauth.oauthOther, decryptBody, (req, res) =>
