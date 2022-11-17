@@ -33,6 +33,14 @@ module.exports = (router) => {
     routes.updateCampaign
   );
 
+  // Create course
+  router.post(
+    "/su/postcreatecourse",
+    oauth.oauthOther,
+    decryptBody,
+    routes.postCreateCourse
+  );
+
   // router.post("/prueba", decryptBody, routes.prueba);
 
   //CRUD
