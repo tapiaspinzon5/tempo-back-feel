@@ -112,6 +112,29 @@ let updateCampaignTable = [
   },
 ];
 
+let insertSuperCourseTable = [
+  {
+    name: "nameActivity",
+    type: TYPES.VarChar,
+  },
+  {
+    name: "descActivity",
+    type: TYPES.VarChar,
+  },
+  {
+    name: "typeCLP",
+    type: TYPES.Int,
+  },
+  {
+    name: "urlActivity",
+    type: TYPES.VarChar,
+  },
+  {
+    name: "idRegistry",
+    type: TYPES.Int,
+  },
+];
+
 exports.parametros = (req, tipo) => {
   switch (tipo) {
     case "spUpdateRoleUser":
@@ -159,6 +182,16 @@ exports.parametros = (req, tipo) => {
       ]);
     case "spQueryRoleUser":
       return parametrizacion([new SpParam("ident", req.idccms, TYPES.Int)]);
+
+    case "spInsertCourse":
+      return parametrizacion([
+        new SpParam("ident", req.requestedBy, TYPES.Int),
+        new SpParam("idCampaign", req.idCampaign, TYPES.Int),
+        new SpParam("nameCourse", req.nameCourse, TYPES.VarChar),
+        new SpParam("descripctionCourse", req.descCourse, TYPES.VarChar),
+        new SpParam("isPrivate", req.private, TYPES.Int),
+        SpParamTable2("table", insertSuperCourseTable, req.rows),
+      ]);
     default:
       return null;
   }

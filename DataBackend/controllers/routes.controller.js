@@ -150,6 +150,46 @@ exports.updateCampaign = async (req, res) => {
   }
 };
 
+exports.postCreateCourse = async (req, res) => {
+  const {
+    requestedBy,
+    idCampaign,
+    nameCourse,
+    descCourse,
+    private,
+    activities,
+  } = req.body;
+  let i = 0;
+
+  try {
+    let rows = activities.map(
+      ({ nameActivity, descActivity, typeContent, urlActivity }) => {
+        i = i + 1;
+        return [nameActivity, descActivity, typeContent, urlActivity, i];
+      }
+    );
+
+    sql
+      .query(
+        "spInsertCourse",
+        parametros(
+          { requestedBy, idCampaign, nameCourse, descCourse, private, rows },
+          "spInsertCourse"
+        )
+      )
+      .then(async (result) => {
+        responsep(1, req, res, result);
+      })
+      .catch((err) => {
+        console.log(err, "sp");
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    console.log(error);
+    responsep(2, req, res, error);
+  }
+};
+
 // exports.prueba = (req, res) => {
 //   res.status(200).json({ body: req.body });
 // };
