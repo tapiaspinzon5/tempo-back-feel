@@ -189,7 +189,7 @@ exports.parametros = (req, tipo) => {
         new SpParam("idCampaign", req.idCampaign, TYPES.Int),
         new SpParam("nameCourse", req.nameCourse, TYPES.VarChar),
         new SpParam("descripctionCourse", req.descCourse, TYPES.VarChar),
-        new SpParam("isPrivate", req.private, TYPES.Int),
+        new SpParam("isPrivate", req.private, TYPES.Bit),
         SpParamTable2("table", insertSuperCourseTable, req.rows),
       ]);
     case "spQueryCourses":
