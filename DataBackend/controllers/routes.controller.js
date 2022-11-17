@@ -190,6 +190,83 @@ exports.postCreateCourse = async (req, res) => {
   }
 };
 
+exports.getcourses = async (req, res) => {
+  const { requestedBy, idCampaign } = req.body;
+
+  try {
+    sql
+      .query(
+        "spQueryCourses",
+        parametros({ requestedBy, idCampaign }, "spQueryCourses")
+      )
+      .then(async (result) => {
+        let rows = [];
+        let rows2 = [];
+
+        // nameActivity
+        // descActivity
+        // typeContent
+        // urlActivity
+
+        // "requestedBy": 4472074,
+        // "idCampaign": 1,
+        // "nameCourse": "algo",
+        // "descCourse": "alguna descripcion",
+        // "private": true,
+        // "activities":
+
+        // Agrupamos por curso
+        result.forEach((e) => {
+          if (rows[e.idCourse]) {
+            rows[e.idCourse].activities.push({
+              idActivity: e.idActivity,
+              nameActivity: e.nameActivity,
+              descActivity: e.descriptionActivity,
+              urlActivity: e.url,
+              typeContent: e.idActivityType,
+            });
+          }
+
+          if (!rows[e.idCourse]) {
+            rows[e.idCourse] = {
+              idCampaign: e.idCampaign,
+              nameCampaign: e.nameCampaign,
+              idCourse: e.idCourse,
+              nameCourse: e.nameCourse,
+              descCourse: e.descriptionCourse,
+              private: e.private,
+              StatusCourse: e.StatusCourse,
+              UsrCreation: e.UsrCreation,
+              activities: [
+                {
+                  idActivity: e.idActivity,
+                  nameActivity: e.nameActivity,
+                  descActivity: e.descriptionActivity,
+                  urlActivity: e.url,
+                  typeContent: e.idActivityType,
+                },
+              ],
+            };
+          }
+        });
+
+        // removemos los null del array
+        rows.forEach((el) => {
+          rows2.push(el);
+        });
+
+        responsep(1, req, res, rows2);
+      })
+      .catch((err) => {
+        console.log(err, "sp");
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    console.log(error);
+    responsep(2, req, res, error);
+  }
+};
+
 // exports.prueba = (req, res) => {
 //   res.status(200).json({ body: req.body });
 // };
