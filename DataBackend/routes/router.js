@@ -52,6 +52,8 @@ module.exports = (router) => {
   MapSpRouter("/sqldelete", "spDeleteCentral");
   MapSpRouter("/getagentesinfomd", "spQueryUsersMD");
   MapSpRouter("/su/getcampaigncontent", "spQueryCampaignContent");
+  MapSpRouter("/su/getcourses", "spQueryCourses");
+  MapSpRouter("/su/getusers", "spQueryUser");
 
   function MapSpRouter(route, spName) {
     router.post(route, oauth.oauthOther, decryptBody, (req, res) =>

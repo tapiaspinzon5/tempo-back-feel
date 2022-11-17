@@ -192,6 +192,17 @@ exports.parametros = (req, tipo) => {
         new SpParam("isPrivate", req.private, TYPES.Int),
         SpParamTable2("table", insertSuperCourseTable, req.rows),
       ]);
+    case "spQueryCourses":
+      return parametrizacion([
+        new SpParam("ident", req.requestedBy, TYPES.Int),
+        new SpParam("idCampaign", req.idCampaign, TYPES.Int),
+      ]);
+    case "spQueryUser":
+      return parametrizacion([
+        new SpParam("ident", req.requestedBy, TYPES.Int),
+        new SpParam("IdMin", req.start, TYPES.Int),
+        new SpParam("IdMax", req.end, TYPES.Int),
+      ]);
     default:
       return null;
   }
