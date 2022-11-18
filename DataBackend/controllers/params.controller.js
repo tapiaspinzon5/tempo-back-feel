@@ -135,6 +135,29 @@ let insertSuperCourseTable = [
   },
 ];
 
+let updateUserTable = [
+  {
+    name: "ident",
+    type: TYPES.Int,
+  },
+  {
+    name: "roleUser",
+    type: TYPES.VarChar,
+  },
+  {
+    name: "idLob",
+    type: TYPES.Int,
+  },
+  {
+    name: "idCampaign",
+    type: TYPES.Int,
+  },
+  {
+    name: "idRegistry",
+    type: TYPES.Int,
+  },
+];
+
 exports.parametros = (req, tipo) => {
   switch (tipo) {
     case "spUpdateRoleUser":
@@ -202,6 +225,12 @@ exports.parametros = (req, tipo) => {
         new SpParam("ident", req.requestedBy, TYPES.Int),
         new SpParam("IdMin", req.start, TYPES.Int),
         new SpParam("IdMax", req.end, TYPES.Int),
+      ]);
+    case "spUpdateUser":
+      return parametrizacion([
+        new SpParam("ident", req.requestedBy, TYPES.Int),
+        new SpParam("Context", req.context, TYPES.Int),
+        SpParamTable2("table", updateUserTable, req.rows),
       ]);
     default:
       return null;

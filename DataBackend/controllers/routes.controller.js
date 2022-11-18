@@ -267,6 +267,34 @@ exports.getcourses = async (req, res) => {
   }
 };
 
+exports.updateUsers = async (req, res) => {
+  const { requestedBy, context, user } = req.body;
+  const { idccms, idLob, idCampaign } = user;
+  try {
+    const rows = [[idccms, null, idLob, idCampaign, 1]];
+    // {
+    //   "requestedBy": 4472074,
+    //   "context": 1,
+    //   "user":{"idccms":123456, "idLob": id lob nueva, "idCampaign":id campaña nueva},
+    // }
+
+    sql
+      .query(
+        "spUpdateUser",
+        parametros({ requestedBy, context, rows }, "spUpdateUser")
+      )
+      .then(async (result) => {
+        responsep(1, req, res, result);
+      })
+      .catch((err) => {
+        console.log(err, "sp");
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    console.log(error);
+    responsep(2, req, res, error);
+  }
+};
 // exports.prueba = (req, res) => {
 //   res.status(200).json({ body: req.body });
 // };

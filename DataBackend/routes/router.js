@@ -47,6 +47,8 @@ module.exports = (router) => {
     decryptBody,
     routes.getcourses
   );
+  // edit users
+  router.post("/updateuser", oauth.oauthOther, decryptBody, routes.updateUsers);
 
   // router.post("/prueba", decryptBody, routes.prueba);
 
