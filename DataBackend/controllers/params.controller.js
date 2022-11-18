@@ -232,6 +232,12 @@ exports.parametros = (req, tipo) => {
         new SpParam("Context", req.context, TYPES.Int),
         SpParamTable2("table", updateUserTable, req.rows),
       ]);
+    case "spUpdateCourse":
+      return parametrizacion([
+        new SpParam("ident", req.requestedBy, TYPES.Int),
+        new SpParam("idCourse", req.idCourse, TYPES.Int),
+        new SpParam("contex", req.context, TYPES.Int),
+      ]);
     default:
       return null;
   }
