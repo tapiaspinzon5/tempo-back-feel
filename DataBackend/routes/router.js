@@ -50,6 +50,14 @@ module.exports = (router) => {
   // edit users
   router.post("/updateuser", oauth.oauthOther, decryptBody, routes.updateUsers);
 
+  // Update course
+  router.post(
+    "/su/updateCourse",
+    oauth.oauthOther,
+    decryptBody,
+    routes.postUpdateCourse
+  );
+
   // router.post("/prueba", decryptBody, routes.prueba);
 
   //CRUD
@@ -62,7 +70,6 @@ module.exports = (router) => {
   MapSpRouter("/getagentesinfomd", "spQueryUsersMD");
   MapSpRouter("/su/getcampaigncontent", "spQueryCampaignContent");
   MapSpRouter("/su/getusers", "spQueryUser");
-  MapSpRouter("/su/updateCourse", "spUpdateCourse");
 
   function MapSpRouter(route, spName) {
     router.post(route, oauth.oauthOther, decryptBody, (req, res) =>
