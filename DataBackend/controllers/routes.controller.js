@@ -300,7 +300,16 @@ exports.updateUsers = async (req, res) => {
 };
 
 exports.postUpdateCourse = async (req, res) => {
-  const { requestedBy, idCourse, context, activities } = req.body;
+  const {
+    requestedBy,
+    idCourse,
+    idCampaign,
+    nameCourse,
+    descCourse,
+    private,
+    context,
+    activities,
+  } = req.body;
   let i = 0;
 
   try {
@@ -314,7 +323,19 @@ exports.postUpdateCourse = async (req, res) => {
     sql
       .query(
         "spUpdateCourse",
-        parametros({ requestedBy, idCourse, context, rows }, "spUpdateCourse")
+        parametros(
+          {
+            requestedBy,
+            idCourse,
+            idCampaign,
+            nameCourse,
+            descCourse,
+            private,
+            context,
+            rows,
+          },
+          "spUpdateCourse"
+        )
       )
       .then(async (result) => {
         responsep(1, req, res, result);
