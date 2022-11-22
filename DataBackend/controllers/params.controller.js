@@ -260,6 +260,10 @@ exports.parametros = (req, tipo) => {
       return parametrizacion([
         new SpParam("ident", req.requestedBy, TYPES.Int),
         new SpParam("idCourse", req.idCourse, TYPES.Int),
+        new SpParam("idCampaign", req.idCampaign, TYPES.Int),
+        new SpParam("nameCourse", req.nameCourse, TYPES.VarChar),
+        new SpParam("descripctionCourse", req.descCourse, TYPES.VarChar),
+        new SpParam("isPrivate", req.private, TYPES.Bit),
         new SpParam("contex", req.context, TYPES.Int),
         SpParamTable2("table", insertSuperCourseTable, req.rows),
       ]);
