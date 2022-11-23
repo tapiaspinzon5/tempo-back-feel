@@ -24,17 +24,21 @@ const { jwt } = require("./controllers/jwt.controller");
 const { configure } = require("./controllers/configure");
 const path = require("path");
 const corsOptions = {
-  origin: ["http://localhost:3000", "feelsdev.teleperformance.co"],
+  origin: [
+    "http://localhost:3000",
+    "https://feelsdev.teleperformance.co",
+    "https://tpfeeltest.teleperformance.co",
+  ],
   credentials: true,
 };
 app.use(cors(corsOptions));
-app.use(helmet.frameguard({ action: "SAMEORIGIN" }));
 app.use((req, res, next) => {
   res.set({
     "Cache-Control": `no-cache, no-store, must-revalidate`,
   });
   next();
 });
+app.use(helmet.frameguard({ action: "SAMEORIGIN" }));
 app.use(helmet.noSniff());
 app.use(helmet.hidePoweredBy());
 app.use(helmet.permittedCrossDomainPolicies());

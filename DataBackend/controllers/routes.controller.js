@@ -304,6 +304,7 @@ exports.postUpdateCourse = async (req, res) => {
     requestedBy,
     idCourse,
     idCampaign,
+    idActivity,
     nameCourse,
     descCourse,
     private,
@@ -332,6 +333,7 @@ exports.postUpdateCourse = async (req, res) => {
             descCourse,
             private,
             context,
+            idActivity,
             rows,
           },
           "spUpdateCourse"
