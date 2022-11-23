@@ -264,6 +264,7 @@ exports.parametros = (req, tipo) => {
         new SpParam("nameCourse", req.nameCourse, TYPES.VarChar),
         new SpParam("descripctionCourse", req.descCourse, TYPES.VarChar),
         new SpParam("isPrivate", req.private, TYPES.Bit),
+        new SpParam("idActivity", req.idActivity, TYPES.Int),
         new SpParam("contex", req.context, TYPES.Int),
         SpParamTable2("table", insertSuperCourseTable, req.rows),
       ]);
