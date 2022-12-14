@@ -38,10 +38,10 @@ app.use((req, res, next) => {
   });
   next();
 });
-app.use(helmet.frameguard({ action: "SAMEORIGIN" }));
-app.use(helmet.noSniff());
+// app.use(helmet.frameguard({ action: "SAMEORIGIN" }));
+// app.use(helmet.noSniff());
 app.use(helmet.hidePoweredBy());
-app.use(helmet.permittedCrossDomainPolicies());
+// app.use(helmet.permittedCrossDomainPolicies());
 // app.use(csrfProtection);
 app.disable("x-powered-by");
 

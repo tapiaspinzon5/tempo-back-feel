@@ -2,8 +2,10 @@ require("dotenv").config();
 const path = require("path");
 const CryptoJS = require("crypto-js");
 const { randomInt } = require("crypto");
+const jwt = require("jsonwebtoken");
 const sql = require("./sql.controller");
 const parametros = require("./params.controller").parametros;
+const fetch = require("../helpers/fetch.js");
 
 exports.CallSp = (spName, req, res) => {
   sql
@@ -72,6 +74,70 @@ let responsep = (tipo, req, res, resultado, cookie) => {
         );
     }
   });
+};
+
+exports.login = async (req, res) => {
+  const { mstoken } = req.body;
+
+  const graphResponse = await fetch(
+    "https://graph.microsoft.com/beta/me",
+    mstoken,
+    res
+  );
+
+  // const data = {
+  //   idccms: graphResponse.employeeId,
+  //   userName: graphResponse.mailNickname,
+  //   name: graphResponse.displayName,
+  //   wemail: graphResponse.onPremisesUserPrincipalName,
+  //   name: graphResponse.displayName,
+  // };
+
+  const token = jwt.sign(
+    {
+      exp: Math.floor(Date.now() / 1000) + 60 * 60,
+      email: graphResponse.onPremisesUserPrincipalName,
+    },
+    process.env.JWT_SECRET
+  );
+
+  sql
+    .query(
+      "spQueryRoleUser",
+      parametros({ idccms: graphResponse.employeeId }, "spQueryRoleUser")
+    )
+    .then((result2) => {
+      let data = {
+        nombre: graphResponse.displayName,
+        idccms: graphResponse.employeeId,
+        userName: graphResponse.mailNickname,
+        email: graphResponse.onPremisesUserPrincipalName,
+        token,
+        // nombre: result?.data.data?.nombre,
+        // idccms: result?.data.data?.idccms,
+        // userName: result?.data.data?.username,
+        // token: result?.data.data?.token,
+        // refreshToken: result?.data.data?.refreshToken,
+        role: result2[0]?.role,
+        numberLogins: result2[0]?.numberLogins,
+        idCampaign: result2[0]?.idCampaign,
+        nameCampaign: result2[0]?.nameCampaign,
+        idTeam: result2[0]?.idTeam,
+        nameTeam: result2[0]?.nameTeam,
+        lastLogin: result2[0]?.lastLogin,
+      };
+
+      // const dataEncrypted = CryptoJS.AES.encrypt(
+      //   JSON.stringify(data),
+      //   process.env.CRYPTOJS_SECRET
+      // ).toString();
+      responsep(1, req, res, data);
+      // responsep(1, req, res, dataEncrypted);
+    })
+    .catch((err) => {
+      console.log(err, "sp");
+      responsep(2, req, res, err);
+    });
 };
 
 exports.createCampaign = async (req, res) => {
