@@ -15,6 +15,7 @@ module.exports = (router) => {
   });
 
   // METODOS PERSONALIZADOS
+  router.post("/login", routes.login);
   // router.get("/auth/login/:app", routes.login);
 
   // Create campaign
