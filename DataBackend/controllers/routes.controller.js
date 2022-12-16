@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const sql = require("./sql.controller");
 const parametros = require("./params.controller").parametros;
 const fetch = require("../helpers/fetch.js");
+const { generateToken } = require("../utils/generateToken");
 
 exports.CallSp = (spName, req, res) => {
   sql
@@ -77,13 +78,13 @@ let responsep = (tipo, req, res, resultado, cookie) => {
 };
 
 exports.login = async (req, res) => {
-  const { mstoken } = req.body;
+  const { graphResponse, mstoken } = req.body;
 
-  const graphResponse = await fetch(
-    "https://graph.microsoft.com/beta/me",
-    mstoken,
-    res
-  );
+  // const graphResponse = await fetch(
+  //   "https://graph.microsoft.com/beta/me",
+  //   mstoken,
+  //   res
+  // );
 
   // const data = {
   //   idccms: graphResponse.employeeId,
@@ -93,13 +94,17 @@ exports.login = async (req, res) => {
   //   name: graphResponse.displayName,
   // };
 
-  const token = jwt.sign(
-    {
-      exp: Math.floor(Date.now() / 1000) + 60 * 60,
-      email: graphResponse.onPremisesUserPrincipalName,
-    },
-    process.env.JWT_SECRET
-  );
+  // const token = jwt.sign(
+  //   {
+  //     exp: Math.floor(Date.now() / 1000) + 60 * 60,
+  //     email: graphResponse.onPremisesUserPrincipalName,
+  //   },
+  //   process.env.JWT_SECRET
+  // );
+
+  const token = generateToken({
+    email: graphResponse.onPremisesUserPrincipalName,
+  });
 
   sql
     .query(
@@ -113,6 +118,7 @@ exports.login = async (req, res) => {
         userName: graphResponse.mailNickname,
         email: graphResponse.onPremisesUserPrincipalName,
         token,
+        refreshToken: mstoken,
         // nombre: result?.data.data?.nombre,
         // idccms: result?.data.data?.idccms,
         // userName: result?.data.data?.username,

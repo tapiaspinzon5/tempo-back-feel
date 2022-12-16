@@ -1,5 +1,7 @@
 const routes = require("../controllers/routes.controller");
 const { checkIdccms } = require("../middleware/checkIdccms");
+const { checkJwtToken } = require("../middleware/checkJwtToken");
+const { checkMsToken } = require("../middleware/checkMsToken");
 const { decryptBody } = require("../middleware/decrypt");
 const oauth = require("../middleware/oauth");
 
@@ -15,13 +17,13 @@ module.exports = (router) => {
   });
 
   // METODOS PERSONALIZADOS
-  router.post("/login", routes.login);
+  router.post("/login", checkMsToken, routes.login);
   // router.get("/auth/login/:app", routes.login);
 
   // Create campaign
   router.post(
     "/su/createcampaign",
-    oauth.oauthOther,
+    checkJwtToken,
     decryptBody,
     routes.createCampaign
   );
@@ -29,7 +31,7 @@ module.exports = (router) => {
   // update campaign
   router.post(
     "/su/updatecampaign",
-    oauth.oauthOther,
+    checkJwtToken,
     decryptBody,
     routes.updateCampaign
   );
@@ -37,24 +39,19 @@ module.exports = (router) => {
   // Create course
   router.post(
     "/su/postcreatecourse",
-    oauth.oauthOther,
+    checkJwtToken,
     decryptBody,
     routes.postCreateCourse
   );
   // Create course
-  router.post(
-    "/su/getcourses",
-    oauth.oauthOther,
-    decryptBody,
-    routes.getcourses
-  );
+  router.post("/su/getcourses", checkJwtToken, decryptBody, routes.getcourses);
   // edit users
-  router.post("/updateuser", oauth.oauthOther, decryptBody, routes.updateUsers);
+  router.post("/updateuser", checkJwtToken, decryptBody, routes.updateUsers);
 
   // Update course
   router.post(
     "/su/updateCourse",
-    oauth.oauthOther,
+    checkJwtToken,
     decryptBody,
     routes.postUpdateCourse
   );
@@ -73,7 +70,7 @@ module.exports = (router) => {
   MapSpRouter("/su/getusers", "spQueryUser");
 
   function MapSpRouter(route, spName) {
-    router.post(route, oauth.oauthOther, decryptBody, (req, res) =>
+    router.post(route, checkJwtToken, decryptBody, (req, res) =>
       routes.CallSp(spName, req, res)
     );
   }
