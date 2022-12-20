@@ -56,6 +56,9 @@ module.exports = (router) => {
     routes.postUpdateCourse
   );
 
+  // Insert Users
+  router.post("/insertusers", checkJwtToken, decryptBody, routes.insertUsers);
+
   // router.post("/prueba", decryptBody, routes.prueba);
 
   //CRUD

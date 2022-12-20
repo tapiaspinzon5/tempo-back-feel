@@ -84,6 +84,10 @@ let insertCampaignTable = [
     type: TYPES.Int,
   },
   {
+    name: "emailPoc",
+    type: TYPES.VarChar,
+  },
+  {
     name: "idRegistry",
     type: TYPES.Int,
   },
@@ -181,6 +185,53 @@ let insertLPTable = [
   },
 ];
 
+let loadUserTable = [
+  {
+    name: "ident",
+    type: TYPES.Int,
+  },
+  {
+    name: "firstname",
+    type: TYPES.VarChar,
+  },
+  {
+    name: "lastname",
+    type: TYPES.VarChar,
+  },
+  {
+    name: "email",
+    type: TYPES.VarChar,
+  },
+  {
+    name: "position",
+    type: TYPES.VarChar,
+  },
+  {
+    name: "hiredate",
+    type: TYPES.Date,
+  },
+  {
+    name: "country",
+    type: TYPES.VarChar,
+  },
+  {
+    name: "roleUser",
+    type: TYPES.VarChar,
+  },
+  {
+    name: "idLob",
+    type: TYPES.Int,
+  },
+  {
+    name: "idCampaign",
+    type: TYPES.Int,
+  },
+  {
+    name: "idRegistry",
+    type: TYPES.Int,
+  },
+];
+
 exports.parametros = (req, tipo) => {
   switch (tipo) {
     case "spUpdateRoleUser":
@@ -203,16 +254,17 @@ exports.parametros = (req, tipo) => {
 
     case "spInsertCampaign":
       return parametrizacion([
-        new SpParam("ident", req.requestedBy, TYPES.Int),
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
         new SpParam("nameCampaign", req.nameCampaign, TYPES.VarChar),
         SpParamTable2("table", insertCampaignTable, req.rows),
       ]);
     case "spUpdateCampaign":
       return parametrizacion([
-        new SpParam("ident", req.requestedBy, TYPES.Int),
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
         new SpParam("idCampaign", req.idCampaign, TYPES.Int),
         new SpParam("context", req.context, TYPES.Int),
         SpParamTable2("table", updateCampaignTable, req.rows),
+        // SpParamTable2("LoadUsers ", loadUserTable, req.rows2),
       ]);
     case "spQueryCampaignContent":
       return parametrizacion([
@@ -228,7 +280,7 @@ exports.parametros = (req, tipo) => {
         new SpParam("Context", req.context, TYPES.Int),
       ]);
     case "spQueryRoleUser":
-      return parametrizacion([new SpParam("ident", req.idccms, TYPES.Int)]);
+      return parametrizacion([new SpParam("user", req.email, TYPES.VarChar)]);
 
     case "spInsertCourse":
       return parametrizacion([
@@ -276,6 +328,12 @@ exports.parametros = (req, tipo) => {
         new SpParam("idCampaign", req.idCampaign, TYPES.Int),
         new SpParam("idLob", req.idLob, TYPES.Int),
         SpParamTable2("table", insertSuperCourseTable, req.rows),
+      ]);
+
+    case "spInsertUser":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        SpParamTable2("table", loadUserTable, req.rows),
       ]);
 
     default:
