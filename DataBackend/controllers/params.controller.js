@@ -268,7 +268,7 @@ exports.parametros = (req, tipo) => {
       ]);
     case "spQueryCampaignContent":
       return parametrizacion([
-        new SpParam("ident", req.requestedBy, TYPES.Int),
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
         new SpParam("context", req.context, TYPES.Int),
         new SpParam("idcampaign", req.idCampaign, TYPES.Int),
         new SpParam("idlob", req.idLob, TYPES.Int),
