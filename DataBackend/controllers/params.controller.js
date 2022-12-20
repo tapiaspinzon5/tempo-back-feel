@@ -276,8 +276,8 @@ exports.parametros = (req, tipo) => {
       ]);
     case "spQueryUsersMD":
       return parametrizacion([
-        new SpParam("ident", req.idccms, TYPES.Int),
-        new SpParam("Context", req.context, TYPES.Int),
+        new SpParam("user", req.idccms, TYPES.VarChar),
+        // new SpParam("Context", req.context, TYPES.Int),
       ]);
     case "spQueryRoleUser":
       return parametrizacion([new SpParam("user", req.email, TYPES.VarChar)]);
