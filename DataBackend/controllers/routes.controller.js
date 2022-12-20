@@ -109,7 +109,10 @@ exports.login = async (req, res) => {
   sql
     .query(
       "spQueryRoleUser",
-      parametros({ idccms: graphResponse.employeeId }, "spQueryRoleUser")
+      parametros(
+        { email: graphResponse.onPremisesUserPrincipalName },
+        "spQueryRoleUser"
+      )
     )
     .then((result2) => {
       let data = {
@@ -151,17 +154,17 @@ exports.createCampaign = async (req, res) => {
   let i = 0;
 
   try {
-    let rows = lobsInfo.map(({ name, idccms }) => {
+    let rows = lobsInfo.map(({ name, idccms, email }) => {
       i = i + 1;
-      return [name, idccms, i];
+      return [name, idccms, email, i];
     });
 
     // {
     //   nameCampaign:"nombre de campaña",
     //   lobsInfo:[
-    //     {name:"lob1", idccms:"4468546"},
-    //     {name:"lob2", idccms:"4462685"},
-    //     {name:"lob3", idccms:"4472074"},
+    //     {name:"lob1", idccms:"4468546", email:"correopoc@nlsa.teleperformance.com"},
+    //     {name:"lob2", idccms:"4462685", email:"correopoc@nlsa.teleperformance.com"},
+    //     {name:"lob3", idccms:"4472074", email:"correopoc@nlsa.teleperformance.com"},
     //     ETC...
     //   ]
     // }
@@ -411,6 +414,31 @@ exports.postUpdateCourse = async (req, res) => {
           "spUpdateCourse"
         )
       )
+      .then(async (result) => {
+        responsep(1, req, res, result);
+      })
+      .catch((err) => {
+        console.log(err, "sp");
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    console.log(error);
+    responsep(2, req, res, error);
+  }
+};
+
+exports.insertUsers = async (req, res) => {
+  const { requestedBy, usersInfo } = req.body;
+  let i = 0;
+
+  try {
+    let rows = usersInfo.map((el) => {
+      i = i + 1;
+      return [...el, i];
+    });
+
+    sql
+      .query("spInsertUser", parametros({ requestedBy, rows }, "spInsertUser"))
       .then(async (result) => {
         responsep(1, req, res, result);
       })
