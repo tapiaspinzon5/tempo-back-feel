@@ -298,7 +298,7 @@ exports.parametros = (req, tipo) => {
       ]);
     case "spQueryUser":
       return parametrizacion([
-        new SpParam("ident", req.requestedBy, TYPES.Int),
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
         new SpParam("IdMin", req.start, TYPES.Int),
         new SpParam("IdMax", req.end, TYPES.Int),
       ]);
