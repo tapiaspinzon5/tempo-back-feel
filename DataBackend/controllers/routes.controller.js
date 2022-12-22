@@ -302,6 +302,7 @@ exports.getcourses = async (req, res) => {
               descActivity: e.descriptionActivity,
               urlActivity: e.url,
               typeContent: e.idActivityType,
+              orderActivity: e.OrderActivity,
             });
           }
 
@@ -322,6 +323,7 @@ exports.getcourses = async (req, res) => {
                   descActivity: e.descriptionActivity,
                   urlActivity: e.url,
                   typeContent: e.idActivityType,
+                  orderActivity: e.OrderActivity,
                 },
               ],
             };
@@ -333,6 +335,15 @@ exports.getcourses = async (req, res) => {
           rows2.push(el);
         });
 
+        let sortedActivities = rows2[0].activities.sort((r1, r2) =>
+          r1.orderActivity > r2.orderActivity
+            ? 1
+            : r1.orderActivity < r2.orderActivity
+            ? -1
+            : 0
+        );
+
+        rows2[0].activities = sortedActivities;
         responsep(1, req, res, rows2);
       })
       .catch((err) => {
