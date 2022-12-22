@@ -71,6 +71,7 @@ module.exports = (router) => {
   MapSpRouter("/getagentesinfomd", "spQueryUsersMD");
   MapSpRouter("/su/getcampaigncontent", "spQueryCampaignContent");
   MapSpRouter("/su/getusers", "spQueryUser");
+  MapSpRouter("/poc/getlobscourses", "spQueryLobCourses");
 
   function MapSpRouter(route, spName) {
     router.post(route, checkJwtToken, decryptBody, (req, res) =>
