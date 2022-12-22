@@ -217,6 +217,10 @@ let insertUpdateUserTable = [
     type: TYPES.Int,
   },
   {
+    name: "idEmployee",
+    type: TYPES.Int,
+  },
+  {
     name: "firstname",
     type: TYPES.VarChar,
   },

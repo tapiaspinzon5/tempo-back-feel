@@ -349,6 +349,7 @@ exports.updateUsers = async (req, res) => {
   const { requestedBy, context, user } = req.body;
   const {
     idccms,
+    idEmployee,
     name,
     lastName,
     email,
@@ -364,6 +365,7 @@ exports.updateUsers = async (req, res) => {
     const rows = [
       [
         idccms,
+        idEmployee,
         name,
         lastName,
         email,
