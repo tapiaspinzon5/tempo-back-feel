@@ -347,9 +347,35 @@ exports.getcourses = async (req, res) => {
 
 exports.updateUsers = async (req, res) => {
   const { requestedBy, context, user } = req.body;
-  const { idccms, idLob, idCampaign } = user;
+  const {
+    idccms,
+    name,
+    lastName,
+    email,
+    position,
+    hireDate,
+    country,
+    role,
+    idLob,
+    idCampaign,
+  } = user;
+
   try {
-    const rows = [[idccms, null, idLob, idCampaign, 1]];
+    const rows = [
+      [
+        idccms,
+        name,
+        lastName,
+        email,
+        position,
+        hireDate,
+        country,
+        role,
+        idLob,
+        idCampaign,
+        1,
+      ],
+    ];
     // {
     //   "requestedBy": 4472074,
     //   "context": 1,
