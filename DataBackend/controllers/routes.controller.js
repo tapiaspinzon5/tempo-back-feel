@@ -243,7 +243,7 @@ exports.postCreateCourse = async (req, res) => {
     let rows = activities.map(
       ({ nameActivity, descActivity, typeContent, urlActivity }) => {
         i = i + 1;
-        return [nameActivity, descActivity, typeContent, urlActivity, i];
+        return [nameActivity, descActivity, typeContent, urlActivity, i, i];
       }
     );
 
@@ -392,7 +392,7 @@ exports.postUpdateCourse = async (req, res) => {
     let rows = activities.map(
       ({ nameActivity, descActivity, typeContent, urlActivity }) => {
         i = i + 1;
-        return [nameActivity, descActivity, typeContent, urlActivity, i];
+        return [nameActivity, descActivity, typeContent, urlActivity, i, i];
       }
     );
 
