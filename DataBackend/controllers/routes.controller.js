@@ -293,6 +293,10 @@ exports.getcourses = async (req, res) => {
         // "private": true,
         // "activities":
 
+        if (result.length === 0) {
+          return responsep(1, req, res, rows2);
+        }
+
         // Agrupamos por curso
         result.forEach((e) => {
           if (rows[e.idCourse]) {
@@ -335,6 +339,7 @@ exports.getcourses = async (req, res) => {
           rows2.push(el);
         });
 
+        // Ordenamos las actividades por la columna orderActivity
         let sortedActivities = rows2[0].activities.sort((r1, r2) =>
           r1.orderActivity > r2.orderActivity
             ? 1
