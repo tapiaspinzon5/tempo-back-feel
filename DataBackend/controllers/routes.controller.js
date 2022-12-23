@@ -339,17 +339,21 @@ exports.getcourses = async (req, res) => {
           rows2.push(el);
         });
 
-        // Ordenamos las actividades por la columna orderActivity
-        let sortedActivities = rows2[0].activities.sort((r1, r2) =>
-          r1.orderActivity > r2.orderActivity
-            ? 1
-            : r1.orderActivity < r2.orderActivity
-            ? -1
-            : 0
-        );
+        let coursesWithActivityOrdered = rows2.map((course) => {
+          // Ordenamos las actividades por la columna orderActivity
+          let sortedActivities = course.activities.sort((r1, r2) =>
+            r1.orderActivity > r2.orderActivity
+              ? 1
+              : r1.orderActivity < r2.orderActivity
+              ? -1
+              : 0
+          );
 
-        rows2[0].activities = sortedActivities;
-        responsep(1, req, res, rows2);
+          course.activities = sortedActivities;
+          return course;
+        });
+
+        responsep(1, req, res, coursesWithActivityOrdered);
       })
       .catch((err) => {
         console.log(err, "sp");
