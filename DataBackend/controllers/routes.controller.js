@@ -115,6 +115,10 @@ exports.login = async (req, res) => {
       )
     )
     .then((result2) => {
+      if (result2.length == 0) {
+        return res.status(401).json({ ok: false, msg: "No data in feel" });
+      }
+
       let data = {
         nombre: graphResponse.displayName,
         idccms: graphResponse.employeeId,
