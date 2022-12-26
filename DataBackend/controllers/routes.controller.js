@@ -192,9 +192,9 @@ exports.updateCampaign = async (req, res) => {
   let i = 0;
 
   try {
-    let rows = lobsInfo.map(({ id, name, idccms }) => {
+    let rows = lobsInfo.map(({ id, name, idEmployee }) => {
       i = i + 1;
-      return [nameCampaign, id, name, idccms, i];
+      return [nameCampaign, id, name, idEmployee, i];
     });
 
     // {
