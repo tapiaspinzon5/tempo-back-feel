@@ -7,6 +7,7 @@ const sql = require("./sql.controller");
 const parametros = require("./params.controller").parametros;
 const fetch = require("../helpers/fetch.js");
 const { generateToken } = require("../utils/generateToken");
+const { checkEmails } = require("../helpers/checkEmailusers");
 
 exports.CallSp = (spName, req, res) => {
   sql
@@ -410,6 +411,10 @@ exports.updateUsers = async (req, res) => {
     //   "user":{"idccms":123456, "idLob": id lob nueva, "idCampaign":id campaña nueva},
     // }
 
+    // Validamos que no existan los correos que ingresaron
+    let activeUsers = await checkEmails(rows);
+    if (activeUsers.length > 0) return responsep(2, req, res, activeUsers);
+
     sql
       .query(
         "spUpdateUser",
@@ -490,6 +495,10 @@ exports.insertUsers = async (req, res) => {
       i = i + 1;
       return [...el, i];
     });
+
+    // Validamos que no existan los correos que ingresaron
+    let activeUsers = await checkEmails(rows);
+    if (activeUsers.length > 0) return responsep(2, req, res, activeUsers);
 
     sql
       .query("spInsertUser", parametros({ requestedBy, rows }, "spInsertUser"))
