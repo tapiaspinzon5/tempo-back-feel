@@ -369,6 +369,10 @@ exports.parametros = (req, tipo) => {
         new SpParam("user", req.requestedBy, TYPES.VarChar),
         SpParamTable2("table", insertUpdateUserTable, req.rows),
       ]);
+    case "spQueryUsersDB":
+      return parametrizacion([
+        SpParamTable2("table", insertUpdateUserTable, req.rows),
+      ]);
     case "spQueryLobCourses":
       return parametrizacion([
         new SpParam("user", req.requestedBy, TYPES.VarChar),
