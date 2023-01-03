@@ -135,8 +135,8 @@ exports.login = async (req, res) => {
         numberLogins: result2[0]?.numberLogins,
         idCampaign: result2[0]?.idCampaign,
         nameCampaign: result2[0]?.nameCampaign,
-        idTeam: result2[0]?.idTeam,
-        nameTeam: result2[0]?.nameTeam,
+        idLob: result2[0]?.idTeam,
+        nameLob: result2[0]?.nameTeam,
         lastLogin: result2[0]?.lastLogin,
       };
 
