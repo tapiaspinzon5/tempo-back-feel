@@ -381,6 +381,7 @@ exports.updateUsers = async (req, res) => {
     hireDate,
     country,
     role,
+    wave,
     idLob,
     idCampaign,
   } = user;
@@ -397,6 +398,7 @@ exports.updateUsers = async (req, res) => {
         hireDate,
         country,
         role,
+        wave,
         idLob,
         idCampaign,
         1,
