@@ -372,48 +372,32 @@ exports.getcourses = async (req, res) => {
 
 exports.updateUsers = async (req, res) => {
   const { requestedBy, context, user } = req.body;
-  const {
-    idccms,
-    idEmployee,
-    name,
-    lastName,
-    email,
-    position,
-    hireDate,
-    country,
-    role,
-    wave,
-    idLob,
-    idCampaign,
-  } = user;
 
   try {
-    const rows = [
-      [
-        idccms,
-        idEmployee,
-        name,
-        lastName,
-        email,
-        position,
-        hireDate,
-        country,
-        role,
-        wave,
-        idLob,
-        idCampaign,
-        1,
-      ],
-    ];
+    const rows = [[...Object.values(user), 1]];
+
     // {
     //   "requestedBy": 4472074,
     //   "context": 1,
     //   "user":{"idccms":123456, "idLob": id lob nueva, "idCampaign":id campaña nueva},
     // }
 
-    // Validamos que no existan los correos que ingresaron
+    // Validamos que los datos coincidan con el que estan editando
     let activeUsers = await checkEmails(rows);
-    if (activeUsers.length > 0) return responsep(2, req, res, activeUsers);
+
+    switch (activeUsers.length) {
+      case 0:
+        break;
+
+      case 1:
+        if (activeUsers[0].idEmployee !== user.idEmployee) {
+          return responsep(2, req, res, activeUsers);
+        }
+        break;
+
+      default:
+        return responsep(2, req, res, activeUsers);
+    }
 
     sql
       .query(
@@ -428,7 +412,7 @@ exports.updateUsers = async (req, res) => {
         responsep(2, req, res, err);
       });
   } catch (error) {
-    console.log(error);
+    console.log(error, "error");
     responsep(2, req, res, error);
   }
 };
