@@ -601,7 +601,7 @@ exports.getLearningPlan = async (req, res) => {
           return lp;
         });
 
-        responsep(1, req, res, coursesWithActivityOrdered);
+        responsep(1, req, res, learningPlanWcoursesOrdered);
       })
       .catch((err) => {
         console.log(err, "sp");
