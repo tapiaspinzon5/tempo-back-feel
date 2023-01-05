@@ -71,6 +71,8 @@ module.exports = (router) => {
     routes.getLearningPlan
   );
 
+  router.post("/updatelp", checkJwtToken, decryptBody, routes.updateLp);
+
   // router.post("/prueba", decryptBody, routes.prueba);
 
   //CRUD

@@ -401,6 +401,17 @@ exports.parametros = (req, tipo) => {
         SpParamTable2("table", insertCoursesTable, req.rows),
       ]);
 
+    case "spUpdateLp":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("idLP", req.idLP, TYPES.VarChar),
+        new SpParam("idLob", req.idLob, TYPES.VarChar),
+        new SpParam("nameLP", req.nameLP, TYPES.Int),
+        new SpParam("descripctionLP", req.descLP, TYPES.Int),
+        new SpParam("context", req.context, TYPES.Int),
+        SpParamTable2("table", insertCoursesTable, req.rows),
+      ]);
+
     default:
       return null;
   }
