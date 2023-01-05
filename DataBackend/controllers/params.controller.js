@@ -266,6 +266,21 @@ let insertUpdateUserTable = [
   },
 ];
 
+let insertCoursesTable = [
+  {
+    name: "idCourse",
+    type: TYPES.Int,
+  },
+  {
+    name: "orderCourse",
+    type: TYPES.Int,
+  },
+  {
+    name: "idRegistry",
+    type: TYPES.Int,
+  },
+];
+
 exports.parametros = (req, tipo) => {
   switch (tipo) {
     case "spUpdateRoleUser":
@@ -354,15 +369,6 @@ exports.parametros = (req, tipo) => {
         new SpParam("context", req.context, TYPES.Int),
         SpParamTable2("table", insertSuperCourseTable, req.rows),
       ]);
-    case "spInsertLearningPlan":
-      return parametrizacion([
-        new SpParam("user", req.requestedBy, TYPES.VarChar),
-        new SpParam("nameLP", req.nameLP, TYPES.VarChar),
-        new SpParam("descripctionLP", req.descriptionLP, TYPES.VarChar),
-        new SpParam("idCampaign", req.idCampaign, TYPES.Int),
-        new SpParam("idLob", req.idLob, TYPES.Int),
-        SpParamTable2("table", insertLearningPlanTable, req.rows),
-      ]);
 
     case "spInsertUser":
       return parametrizacion([
@@ -377,6 +383,22 @@ exports.parametros = (req, tipo) => {
       return parametrizacion([
         new SpParam("user", req.requestedBy, TYPES.VarChar),
         new SpParam("campaign", req.idCampaign, TYPES.Int),
+      ]);
+    case "spQueryLearningPlan":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("idCampaign", req.idCampaign, TYPES.Int),
+        new SpParam("idLob", req.idLob, TYPES.Int),
+      ]);
+
+    case "spInsertLearningPlan":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("nameLP", req.nameLP, TYPES.VarChar),
+        new SpParam("descripctionLP", req.descLP, TYPES.VarChar),
+        new SpParam("idCampaign", req.idCampaign, TYPES.Int),
+        new SpParam("idLob", req.idLob, TYPES.Int),
+        SpParamTable2("table", insertCoursesTable, req.rows),
       ]);
 
     default:

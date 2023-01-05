@@ -58,6 +58,12 @@ module.exports = (router) => {
 
   // Insert Users
   router.post("/insertusers", checkJwtToken, decryptBody, routes.insertUsers);
+  router.post(
+    "/poc/postcreatelp",
+    checkJwtToken,
+    decryptBody,
+    routes.postCreateLP
+  );
 
   // router.post("/prueba", decryptBody, routes.prueba);
 
@@ -72,6 +78,7 @@ module.exports = (router) => {
   MapSpRouter("/su/getcampaigncontent", "spQueryCampaignContent");
   MapSpRouter("/su/getusers", "spQueryUser");
   MapSpRouter("/poc/getlobscourses", "spQueryLobCourses");
+  MapSpRouter("/getlearningplan", "spQueryLearningPlan");
 
   function MapSpRouter(route, spName) {
     router.post(route, checkJwtToken, decryptBody, (req, res) =>
