@@ -274,13 +274,16 @@ exports.postCreateCourse = async (req, res) => {
 };
 
 exports.getcourses = async (req, res) => {
-  const { requestedBy, idCampaign } = req.body;
+  const { requestedBy, idCampaign, context, idCourse } = req.body;
 
   try {
     sql
       .query(
         "spQueryCourses",
-        parametros({ requestedBy, idCampaign }, "spQueryCourses")
+        parametros(
+          { requestedBy, idCampaign, context, idCourse },
+          "spQueryCourses"
+        )
       )
       .then(async (result) => {
         let rows = [];
