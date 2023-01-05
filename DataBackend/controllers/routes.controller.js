@@ -499,6 +499,38 @@ exports.insertUsers = async (req, res) => {
   }
 };
 
+exports.postCreateLP = async (req, res) => {
+  const { requestedBy, nameLP, descLP, idCampaign, idLob, coursesInfo } =
+    req.body;
+  let i = 0;
+
+  try {
+    let rows = coursesInfo.map((el) => {
+      i = i + 1;
+      return [...el, i];
+    });
+
+    sql
+      .query(
+        "spInsertLearningPlan",
+        parametros(
+          { requestedBy, nameLP, descLP, idCampaign, idLob, rows },
+          "spInsertLearningPlan"
+        )
+      )
+      .then(async (result) => {
+        responsep(1, req, res, result);
+      })
+      .catch((err) => {
+        console.log(err, "sp");
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    console.log(error);
+    responsep(2, req, res, error);
+  }
+};
+
 // exports.prueba = (req, res) => {
 //   res.status(200).json({ body: req.body });
 // };
