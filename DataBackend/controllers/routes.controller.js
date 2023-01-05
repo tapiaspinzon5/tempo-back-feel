@@ -612,3 +612,43 @@ exports.getLearningPlan = async (req, res) => {
     responsep(2, req, res, error);
   }
 };
+
+exports.updateLp = async (req, res) => {
+  const { requestedBy, idLP, idLob, nameLP, descLP, context, coursesInfo } =
+    req;
+  let i = 0;
+
+  try {
+    let rows = coursesInfo.map((el) => {
+      i = i + 1;
+      return [...el, i];
+    });
+
+    sql
+      .query(
+        "spUpdateLp",
+        parametros(
+          {
+            requestedBy,
+            idLP,
+            idLob,
+            nameLP,
+            descLP,
+            context,
+            rows,
+          },
+          "spUpdateLp"
+        )
+      )
+      .then(async (result) => {
+        responsep(1, req, res, result);
+      })
+      .catch((err) => {
+        console.log(err, "sp");
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    console.log(error);
+    responsep(2, req, res, error);
+  }
+};
