@@ -531,6 +531,84 @@ exports.postCreateLP = async (req, res) => {
   }
 };
 
-// exports.prueba = (req, res) => {
-//   res.status(200).json({ body: req.body });
-// };
+exports.getLearningPlan = async (req, res) => {
+  const { requestedBy, idCampaign, idLob } = req.body;
+
+  try {
+    sql
+      .query(
+        "spQueryLearningPlan",
+        parametros({ requestedBy, idCampaign, idLob }, "spQueryLearningPlan")
+      )
+      .then(async (result) => {
+        let rows = [];
+        let rows2 = [];
+
+        if (result.length === 0) {
+          return responsep(1, req, res, rows2);
+        }
+
+        // Agrupamos por learningPlan
+        result.forEach((e) => {
+          if (rows[e.idLearningPlan]) {
+            rows[e.idLearningPlan].courses.push({
+              idCourse: e.idCourse,
+              UsrCreationCourse: e.UsrCreationCourse,
+              nameCourse: e.nameCourse,
+              IsPrivate: e.IsPrivate,
+              orderCourse: e.OrderCourse,
+            });
+          }
+
+          if (!rows[e.idLearningPlan]) {
+            rows[e.idLearningPlan] = {
+              idLearningPlan: e.idLearningPlan,
+              nameLearningPlan: e.nameLearningPlan,
+              descriptionLearningPlan: e.descriptionLearningPlan,
+              idCampaign: e.idCampaign,
+              nameCampaign: e.nameCampaign,
+              idLob: e.idLob,
+              nameLob: e.nameLob,
+              courses: [
+                {
+                  idCourse: e.idCourse,
+                  UsrCreationCourse: e.UsrCreationCourse,
+                  nameCourse: e.nameCourse,
+                  IsPrivate: e.IsPrivate,
+                  orderCourse: e.OrderCourse,
+                },
+              ],
+            };
+          }
+        });
+
+        // removemos los null del array
+        rows.forEach((el) => {
+          rows2.push(el);
+        });
+
+        let learningPlanWcoursesOrdered = rows2.map((lp) => {
+          // Ordenamos las actividades por la columna orderActivity
+          let sortedCourses = lp.courses.sort((r1, r2) =>
+            r1.orderCourse > r2.orderCourse
+              ? 1
+              : r1.orderCourse < r2.orderCourse
+              ? -1
+              : 0
+          );
+
+          lp.courses = sortedCourses;
+          return lp;
+        });
+
+        responsep(1, req, res, coursesWithActivityOrdered);
+      })
+      .catch((err) => {
+        console.log(err, "sp");
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    console.log(error);
+    responsep(2, req, res, error);
+  }
+};

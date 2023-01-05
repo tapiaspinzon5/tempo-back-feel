@@ -64,6 +64,12 @@ module.exports = (router) => {
     decryptBody,
     routes.postCreateLP
   );
+  router.post(
+    "/getlearningplan",
+    checkJwtToken,
+    decryptBody,
+    routes.getLearningPlan
+  );
 
   // router.post("/prueba", decryptBody, routes.prueba);
 
@@ -78,7 +84,6 @@ module.exports = (router) => {
   MapSpRouter("/su/getcampaigncontent", "spQueryCampaignContent");
   MapSpRouter("/su/getusers", "spQueryUser");
   MapSpRouter("/poc/getlobscourses", "spQueryLobCourses");
-  MapSpRouter("/getlearningplan", "spQueryLearningPlan");
 
   function MapSpRouter(route, spName) {
     router.post(route, checkJwtToken, decryptBody, (req, res) =>
