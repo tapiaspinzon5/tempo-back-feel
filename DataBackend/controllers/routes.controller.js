@@ -618,7 +618,7 @@ exports.getLearningPlan = async (req, res) => {
 
 exports.updateLp = async (req, res) => {
   const { requestedBy, idLP, idLob, nameLP, descLP, context, coursesInfo } =
-    req;
+    req.body;
   let i = 0;
 
   try {
