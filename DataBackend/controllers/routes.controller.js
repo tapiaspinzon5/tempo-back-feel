@@ -132,6 +132,7 @@ exports.login = async (req, res) => {
         // userName: result?.data.data?.username,
         // token: result?.data.data?.token,
         // refreshToken: result?.data.data?.refreshToken,
+        country: result2[0]?.country,
         role: result2[0]?.role,
         numberLogins: result2[0]?.numberLogins,
         idCampaign: result2[0]?.idCampaign,
