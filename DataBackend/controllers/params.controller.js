@@ -414,6 +414,22 @@ exports.parametros = (req, tipo) => {
         SpParamTable2("table", insertCoursesTable, req.rows),
       ]);
 
+    case "spInsertWave":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("nameWave", req.nameWave, TYPES.VarChar),
+        new SpParam("country", req.country, TYPES.VarChar),
+        new SpParam("trainingType", req.trainingType, TYPES.VarChar),
+        new SpParam("channel", req.channel, TYPES.VarChar),
+        new SpParam("Language", req.lenguage, TYPES.VarChar),
+        new SpParam("otherInfo", req.otherInfo, TYPES.VarChar),
+      ]);
+
+    case "spQueryWaves":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+      ]);
+
     default:
       return null;
   }
