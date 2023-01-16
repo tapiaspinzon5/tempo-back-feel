@@ -656,3 +656,31 @@ exports.updateLp = async (req, res) => {
     responsep(2, req, res, error);
   }
 };
+
+exports.postInsertLPCWave = async (req, res) => {
+  const { requestedBy, idWave, assignmentInfo } = req.body;
+  let i = 0;
+
+  try {
+    let rows = assignmentInfo.map((el) => {
+      i = i + 1;
+      return [...el, i];
+    });
+
+    sql
+      .query(
+        "spInsertLpWave",
+        parametros({ requestedBy, idWave, rows }, "spInsertLpWave")
+      )
+      .then(async (result) => {
+        responsep(1, req, res, result);
+      })
+      .catch((err) => {
+        console.log(err, "sp");
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    console.log(error);
+    responsep(2, req, res, error);
+  }
+};

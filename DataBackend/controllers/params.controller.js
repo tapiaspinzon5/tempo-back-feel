@@ -281,6 +281,21 @@ let insertCoursesTable = [
   },
 ];
 
+let insertLPCWavesTable = [
+  {
+    name: "idlp",
+    type: TYPES.Int,
+  },
+  {
+    name: "idCourse",
+    type: TYPES.Int,
+  },
+  {
+    name: "idRegistry",
+    type: TYPES.Int,
+  },
+];
+
 exports.parametros = (req, tipo) => {
   switch (tipo) {
     case "spUpdateRoleUser":
@@ -426,9 +441,68 @@ exports.parametros = (req, tipo) => {
         new SpParam("otherInfo", req.otherInfo, TYPES.VarChar),
       ]);
 
+    case "spUpdatewave":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("idwave", req.idWave, TYPES.Int),
+        new SpParam("waveNumber", req.waveNumber, TYPES.VarChar),
+        new SpParam("nameWave", req.nameWave, TYPES.VarChar),
+        new SpParam("country", req.country, TYPES.VarChar),
+        new SpParam("trainingType", req.trainingType, TYPES.VarChar),
+        new SpParam("channel", req.channel, TYPES.VarChar),
+        new SpParam("Language", req.lenguage, TYPES.VarChar),
+        new SpParam("otherInfo", req.otherInfo, TYPES.VarChar),
+        new SpParam("Context", req.context, TYPES.Int),
+      ]);
+
+    case "spInsertLpWave":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("idwave", req.idWave, TYPES.Int),
+        SpParamTable2("table", insertLPCWavesTable, req.rows),
+      ]);
+
     case "spQueryWaves":
       return parametrizacion([
         new SpParam("user", req.requestedBy, TYPES.VarChar),
+      ]);
+
+    case "spQueryLpWave":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("idwave", req.idWave, TYPES.Int),
+      ]);
+
+    case "spInsertMeeting":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("meetName", req.name, TYPES.VarChar),
+        new SpParam("meetDescription", req.desc, TYPES.VarChar),
+        new SpParam("dateMeet", req.date, TYPES.Date),
+        new SpParam("hourIniMeet", req.start, TYPES.VarChar),
+        new SpParam("hourEndMeet", req.end, TYPES.VarChar),
+        new SpParam("urlImgMeet", req.urlImage, TYPES.VarChar),
+        new SpParam("urlMeet", req.url, TYPES.VarChar),
+      ]);
+
+    case "spupdateMeeting":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("idMeet", req.idMeeting, TYPES.Int),
+        new SpParam("meetName", req.name, TYPES.VarChar),
+        new SpParam("meetDescription", req.desc, TYPES.VarChar),
+        new SpParam("dateMeet", req.date, TYPES.Date),
+        new SpParam("hourIniMeet", req.start, TYPES.VarChar),
+        new SpParam("hourEndMeet", req.end, TYPES.VarChar),
+        new SpParam("urlImgMeet", req.urlImage, TYPES.VarChar),
+        new SpParam("urlMeet", req.url, TYPES.VarChar),
+        new SpParam("context", req.context, TYPES.Int),
+      ]);
+
+    case "spQueryMeet":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("dateMeet", req.date, TYPES.Date),
       ]);
 
     default:
