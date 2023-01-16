@@ -417,6 +417,7 @@ exports.parametros = (req, tipo) => {
     case "spInsertWave":
       return parametrizacion([
         new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("waveNumber", req.waveNumber, TYPES.VarChar),
         new SpParam("nameWave", req.nameWave, TYPES.VarChar),
         new SpParam("country", req.country, TYPES.VarChar),
         new SpParam("trainingType", req.trainingType, TYPES.VarChar),
