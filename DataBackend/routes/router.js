@@ -80,6 +80,12 @@ module.exports = (router) => {
   );
 
   router.post("/updatelp", checkJwtToken, decryptBody, routes.updateLp);
+  router.post(
+    "/poc/getwaveassignments",
+    checkJwtToken,
+    decryptBody,
+    routes.getWaveAssignments
+  );
 
   // router.post("/prueba", decryptBody, routes.prueba);
 
@@ -97,7 +103,6 @@ module.exports = (router) => {
   MapSpRouter("/poc/postcreatewave", "spInsertWave");
   MapSpRouter("/poc/postupdatewave", "spUpdatewave");
   MapSpRouter("/getwaves", "spQueryWaves");
-  MapSpRouter("/poc/getwaveassignments", "spQueryLpWave");
   MapSpRouter("/poc/postcreatemeeting", "spInsertMeeting");
   MapSpRouter("/poc/postupdatemeeting", "spupdateMeeting");
   MapSpRouter("/poc/getmeetings", "spQueryMeet");

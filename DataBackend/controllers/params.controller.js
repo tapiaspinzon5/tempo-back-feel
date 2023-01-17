@@ -502,6 +502,7 @@ exports.parametros = (req, tipo) => {
       return parametrizacion([
         new SpParam("user", req.requestedBy, TYPES.VarChar),
         new SpParam("date", req.date, TYPES.Date),
+        new SpParam("context", req.context, TYPES.Int),
       ]);
 
     default:
