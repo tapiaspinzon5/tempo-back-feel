@@ -475,26 +475,26 @@ exports.parametros = (req, tipo) => {
     case "spInsertMeeting":
       return parametrizacion([
         new SpParam("user", req.requestedBy, TYPES.VarChar),
-        new SpParam("meetName", req.name, TYPES.VarChar),
-        new SpParam("meetDescription", req.desc, TYPES.VarChar),
-        new SpParam("dateMeet", req.date, TYPES.Date),
-        new SpParam("hourIniMeet", req.start, TYPES.VarChar),
-        new SpParam("hourEndMeet", req.end, TYPES.VarChar),
-        new SpParam("urlImgMeet", req.urlImage, TYPES.VarChar),
-        new SpParam("urlMeet", req.url, TYPES.VarChar),
+        new SpParam("meetName", req.meetName, TYPES.VarChar),
+        new SpParam("meetDescription", req.meetDescription, TYPES.VarChar),
+        new SpParam("dateMeet", req.dateMeet, TYPES.Date),
+        new SpParam("hourIniMeet", req.hourIniMeet, TYPES.VarChar),
+        new SpParam("hourEndMeet", req.hourEndMeet, TYPES.VarChar),
+        new SpParam("urlImgMeet", req.urlImgMeet, TYPES.VarChar),
+        new SpParam("urlMeet", req.urlMeet, TYPES.VarChar),
       ]);
 
     case "spupdateMeeting":
       return parametrizacion([
         new SpParam("user", req.requestedBy, TYPES.VarChar),
-        new SpParam("idMeet", req.idMeeting, TYPES.Int),
-        new SpParam("meetName", req.name, TYPES.VarChar),
-        new SpParam("meetDescription", req.desc, TYPES.VarChar),
-        new SpParam("dateMeet", req.date, TYPES.Date),
-        new SpParam("hourIniMeet", req.start, TYPES.VarChar),
-        new SpParam("hourEndMeet", req.end, TYPES.VarChar),
-        new SpParam("urlImgMeet", req.urlImage, TYPES.VarChar),
-        new SpParam("urlMeet", req.url, TYPES.VarChar),
+        new SpParam("idMeet", req.idMeet, TYPES.Int),
+        new SpParam("meetName", req.meetName, TYPES.VarChar),
+        new SpParam("meetDescription", req.meetDescription, TYPES.VarChar),
+        new SpParam("dateMeet", req.dateMeet, TYPES.Date),
+        new SpParam("hourIniMeet", req.hourIniMeet, TYPES.VarChar),
+        new SpParam("hourEndMeet", req.hourEndMeet, TYPES.VarChar),
+        new SpParam("urlImgMeet", req.urlImgMeet, TYPES.VarChar),
+        new SpParam("urlMeet", req.urlMeet, TYPES.VarChar),
         new SpParam("context", req.context, TYPES.Int),
       ]);
 
