@@ -684,3 +684,40 @@ exports.postInsertLPCWave = async (req, res) => {
     responsep(2, req, res, error);
   }
 };
+exports.getWaveAssignments = async (req, res) => {
+  const { requestedBy, idWave } = req.body;
+  let i = 0;
+  let courses = [];
+  let learningPlan = [];
+
+  try {
+    sql
+      .query(
+        "spQueryLpWave",
+        parametros({ requestedBy, idWave }, "spQueryLpWave")
+      )
+      .then(async (result) => {
+        console.log(result);
+        if (result.length === 0) {
+          return responsep(1, req, res, result);
+        }
+
+        result.map((element) => {
+          if (element.idlp === null) {
+            courses.push(element);
+          } else {
+            learningPlan.push(element);
+          }
+        });
+
+        responsep(1, req, res, { courses, learningPlan });
+      })
+      .catch((err) => {
+        console.log(err, "sp");
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    console.log(error);
+    responsep(2, req, res, error);
+  }
+};
