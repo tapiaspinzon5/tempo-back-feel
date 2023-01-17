@@ -445,13 +445,12 @@ exports.parametros = (req, tipo) => {
       return parametrizacion([
         new SpParam("user", req.requestedBy, TYPES.VarChar),
         new SpParam("idwave", req.idWave, TYPES.Int),
-        new SpParam("waveNumber", req.waveNumber, TYPES.VarChar),
         new SpParam("nameWave", req.nameWave, TYPES.VarChar),
-        new SpParam("country", req.country, TYPES.VarChar),
         new SpParam("trainingType", req.trainingType, TYPES.VarChar),
         new SpParam("channel", req.channel, TYPES.VarChar),
         new SpParam("Language", req.lenguage, TYPES.VarChar),
         new SpParam("otherInfo", req.otherInfo, TYPES.VarChar),
+        new SpParam("waveNumber", req.waveNumber, TYPES.VarChar),
         new SpParam("Context", req.context, TYPES.Int),
       ]);
 
@@ -502,7 +501,7 @@ exports.parametros = (req, tipo) => {
     case "spQueryMeet":
       return parametrizacion([
         new SpParam("user", req.requestedBy, TYPES.VarChar),
-        new SpParam("dateMeet", req.date, TYPES.Date),
+        new SpParam("date", req.date, TYPES.Date),
       ]);
 
     default:
