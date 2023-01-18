@@ -106,6 +106,7 @@ module.exports = (router) => {
   MapSpRouter("/poc/postcreatemeeting", "spInsertMeeting");
   MapSpRouter("/poc/postupdatemeeting", "spupdateMeeting");
   MapSpRouter("/poc/getmeetings", "spQueryMeet");
+  MapSpRouter("/getanalytics", "spQueryAnalitycs");
 
   function MapSpRouter(route, spName) {
     router.post(route, checkJwtToken, decryptBody, (req, res) =>

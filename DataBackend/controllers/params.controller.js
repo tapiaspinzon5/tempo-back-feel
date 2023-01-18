@@ -505,6 +505,12 @@ exports.parametros = (req, tipo) => {
         new SpParam("context", req.context, TYPES.Int),
       ]);
 
+    case "spQueryAnalitycs":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("context", req.context, TYPES.Int),
+      ]);
+
     default:
       return null;
   }
