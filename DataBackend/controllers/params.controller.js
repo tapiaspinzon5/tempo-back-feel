@@ -249,8 +249,8 @@ let insertUpdateUserTable = [
     type: TYPES.VarChar,
   },
   {
-    name: "wave",
-    type: TYPES.VarChar,
+    name: "idwave",
+    type: TYPES.Int,
   },
   {
     name: "idLob",
