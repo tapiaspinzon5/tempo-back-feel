@@ -140,6 +140,8 @@ exports.login = async (req, res) => {
         idLob: result2[0]?.idTeam,
         nameLob: result2[0]?.nameTeam,
         lastLogin: result2[0]?.lastLogin,
+        idWave: result2[0]?.idWave,
+        wave: result2[0]?.wave,
       };
 
       // const dataEncrypted = CryptoJS.AES.encrypt(
