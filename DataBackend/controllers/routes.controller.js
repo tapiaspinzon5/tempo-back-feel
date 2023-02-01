@@ -686,6 +686,7 @@ exports.postInsertLPCWave = async (req, res) => {
     responsep(2, req, res, error);
   }
 };
+
 exports.getWaveAssignments = async (req, res) => {
   const { requestedBy, idWave } = req.body;
   let i = 0;
@@ -713,6 +714,98 @@ exports.getWaveAssignments = async (req, res) => {
         });
 
         responsep(1, req, res, { courses, learningPlan });
+      })
+      .catch((err) => {
+        console.log(err, "sp");
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    console.log(error);
+    responsep(2, req, res, error);
+  }
+};
+
+exports.getAgentAssignments = async (req, res) => {
+  const { requestedBy, context } = req.body;
+  let i = 0;
+  let courses = [];
+  let learningPlan = [];
+
+  try {
+    sql
+      .query(
+        "spQueryLpAgent",
+        parametros({ requestedBy, context }, "spQueryLpAgent")
+      )
+      .then(async (result) => {
+        if (context === 1) {
+          let rows = [];
+          let rows2 = [];
+
+          if (result.Result.length === 0) {
+            return responsep(1, req, res, rows2);
+          }
+
+          // Agrupamos por learningPlan
+          result.Result.forEach((e) => {
+            if (rows[e.idLp]) {
+              rows[e.idLp].courses.push({
+                idCourse: e.idCourse,
+                nameCourse: e.nameCourse,
+                isPrivate: e.isPrivate,
+                orderCourse: e.orderCourse,
+                statusCourse: e.StatusCourse,
+                progress: e.progress,
+                advanceAgent: e.advanceAgent,
+              });
+            }
+
+            if (!rows[e.idLp]) {
+              rows[e.idLp] = {
+                idLp: e.idLp,
+                nameLearningPlan: e.nameLearningPlan,
+                descriptionLearningPlan: e.descriptionLearningPlan,
+                statusLp: e.StatusLp,
+                agent: e.Agent,
+                idEmployee: e.idEmployee,
+                courses: [
+                  {
+                    idCourse: e.idCourse,
+                    nameCourse: e.nameCourse,
+                    isPrivate: e.isPrivate,
+                    orderCourse: e.orderCourse,
+                    statusCourse: e.StatusCourse,
+                    progress: e.progress,
+                    advanceAgent: e.advanceAgent,
+                  },
+                ],
+              };
+            }
+          });
+
+          // removemos los null del array
+          rows.forEach((el) => {
+            rows2.push(el);
+          });
+
+          let learningPlanWcoursesOrdered = rows2.map((lp) => {
+            // Ordenamos las actividades por la columna orderActivity
+            let sortedCourses = lp.courses.sort((r1, r2) =>
+              r1.orderCourse > r2.orderCourse
+                ? 1
+                : r1.orderCourse < r2.orderCourse
+                ? -1
+                : 0
+            );
+
+            lp.courses = sortedCourses;
+            return lp;
+          });
+
+          responsep(1, req, res, learningPlanWcoursesOrdered);
+        } else {
+          responsep(1, req, res, result);
+        }
       })
       .catch((err) => {
         console.log(err, "sp");
