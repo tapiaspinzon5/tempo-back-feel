@@ -3,11 +3,13 @@ const path = require("path");
 const CryptoJS = require("crypto-js");
 const { randomInt } = require("crypto");
 const jwt = require("jsonwebtoken");
+const requestIp = require("request-ip");
 const sql = require("./sql.controller");
 const parametros = require("./params.controller").parametros;
 const fetch = require("../helpers/fetch.js");
 const { generateToken } = require("../utils/generateToken");
 const { checkEmails } = require("../helpers/checkEmailusers");
+const { orderAssign } = require("../helpers/orderAgentAssign");
 
 exports.CallSp = (spName, req, res) => {
   sql
@@ -727,9 +729,9 @@ exports.getWaveAssignments = async (req, res) => {
 
 exports.getAgentAssignments = async (req, res) => {
   const { requestedBy, context } = req.body;
-  let i = 0;
-  let courses = [];
-  let learningPlan = [];
+  const clientIp = "10.168";
+  // const clientIp = requestIp.getClientIp(req);
+  const firstPartIp = clientIp.split(".")[0];
 
   try {
     sql
@@ -738,73 +740,45 @@ exports.getAgentAssignments = async (req, res) => {
         parametros({ requestedBy, context }, "spQueryLpAgent")
       )
       .then(async (result) => {
-        if (context === 1) {
-          let rows = [];
-          let rows2 = [];
-
-          if (result.Result.length === 0) {
-            return responsep(1, req, res, rows2);
-          }
-
-          // Agrupamos por learningPlan
-          result.Result.forEach((e) => {
-            if (rows[e.idLp]) {
-              rows[e.idLp].courses.push({
-                idCourse: e.idCourse,
-                nameCourse: e.nameCourse,
-                isPrivate: e.isPrivate,
-                orderCourse: e.orderCourse,
-                statusCourse: e.StatusCourse,
-                descriptionCourse: e.descriptionCourse,
-                advanceAgent: e.advanceAgent,
-              });
+        switch (context) {
+          case 1:
+            if (result.Result.length === 0) {
+              return responsep(1, req, res, { Result: [] });
             }
 
-            if (!rows[e.idLp]) {
-              rows[e.idLp] = {
-                idLp: e.idLp,
-                nameLearningPlan: e.nameLearningPlan,
-                descriptionLearningPlan: e.descriptionLearningPlan,
-                statusLp: e.StatusLp,
-                agent: e.Agent,
-                idEmployee: e.idEmployee,
-                courses: [
-                  {
-                    idCourse: e.idCourse,
-                    nameCourse: e.nameCourse,
-                    isPrivate: e.isPrivate,
-                    orderCourse: e.orderCourse,
-                    statusCourse: e.StatusCourse,
-                    descriptionCourse: e.descriptionCourse,
-                    advanceAgent: e.advanceAgent,
-                  },
-                ],
-              };
+            if (firstPartIp != 10) {
+              const dataFiltered = result.Result.filter(
+                (c) => c.isPrivate !== true
+              );
+
+              if (dataFiltered.length === 0) {
+                return responsep(1, req, res, { Result: [] });
+              }
+
+              const groupedData = orderAssign(dataFiltered);
+              responsep(1, req, res, { Result: groupedData });
+              // return res.json(groupedData);
+            } else {
+              const groupedData = orderAssign(result.Result);
+              responsep(1, req, res, { Result: groupedData });
+              // return res.json(groupedData);
             }
-          });
+            break;
 
-          // removemos los null del array
-          rows.forEach((el) => {
-            rows2.push(el);
-          });
+          case 2:
+            if (firstPartIp != 10) {
+              const dataFiltered = result.Result.filter(
+                (c) => c.isPrivate !== true
+              );
 
-          let learningPlanWcoursesOrdered = rows2.map((lp) => {
-            // Ordenamos las actividades por la columna orderActivity
-            let sortedCourses = lp.courses.sort((r1, r2) =>
-              r1.orderCourse > r2.orderCourse
-                ? 1
-                : r1.orderCourse < r2.orderCourse
-                ? -1
-                : 0
-            );
+              responsep(1, req, res, { Result: dataFiltered });
+            } else {
+              responsep(1, req, res, result);
+            }
+            break;
 
-            lp.courses = sortedCourses;
-            return lp;
-          });
-
-          responsep(1, req, res, { Result: learningPlanWcoursesOrdered });
-        } else {
-          responsep(1, req, res, result);
+          default:
+            break;
         }
       })
       .catch((err) => {
