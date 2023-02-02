@@ -755,7 +755,7 @@ exports.getAgentAssignments = async (req, res) => {
                 isPrivate: e.isPrivate,
                 orderCourse: e.orderCourse,
                 statusCourse: e.StatusCourse,
-                progress: e.progress,
+                descriptionCourse: e.descriptionCourse,
                 advanceAgent: e.advanceAgent,
               });
             }
@@ -775,7 +775,7 @@ exports.getAgentAssignments = async (req, res) => {
                     isPrivate: e.isPrivate,
                     orderCourse: e.orderCourse,
                     statusCourse: e.StatusCourse,
-                    progress: e.progress,
+                    descriptionCourse: e.descriptionCourse,
                     advanceAgent: e.advanceAgent,
                   },
                 ],
@@ -802,7 +802,7 @@ exports.getAgentAssignments = async (req, res) => {
             return lp;
           });
 
-          responsep(1, req, res, learningPlanWcoursesOrdered);
+          responsep(1, req, res, { Result: learningPlanWcoursesOrdered });
         } else {
           responsep(1, req, res, result);
         }
