@@ -244,6 +244,7 @@ exports.postCreateCourse = async (req, res) => {
     idCampaign,
     nameCourse,
     descCourse,
+    urlImgCourse,
     private,
     activities,
   } = req.body;
@@ -261,7 +262,15 @@ exports.postCreateCourse = async (req, res) => {
       .query(
         "spInsertCourse",
         parametros(
-          { requestedBy, idCampaign, nameCourse, descCourse, private, rows },
+          {
+            requestedBy,
+            idCampaign,
+            nameCourse,
+            urlImgCourse,
+            descCourse,
+            private,
+            rows,
+          },
           "spInsertCourse"
         )
       )
@@ -433,6 +442,7 @@ exports.postUpdateCourse = async (req, res) => {
     idActivity,
     nameCourse,
     descCourse,
+    urlImgCourse,
     private,
     context,
     activities,
@@ -458,6 +468,7 @@ exports.postUpdateCourse = async (req, res) => {
             nameCourse,
             descCourse,
             private,
+            urlImgCourse,
             context,
             idActivity,
             rows,
