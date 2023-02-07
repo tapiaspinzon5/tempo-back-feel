@@ -575,6 +575,7 @@ exports.getLearningPlan = async (req, res) => {
               idCourse: e.idCourse,
               UsrCreationCourse: e.UsrCreationCourse,
               nameCourse: e.nameCourse,
+              urlImgCourse: e.urlImageCourse,
               IsPrivate: e.IsPrivate,
               orderCourse: e.OrderCourse,
             });
@@ -594,6 +595,7 @@ exports.getLearningPlan = async (req, res) => {
                   idCourse: e.idCourse,
                   UsrCreationCourse: e.UsrCreationCourse,
                   nameCourse: e.nameCourse,
+                  urlImgCourse: e.urlImageCourse,
                   IsPrivate: e.IsPrivate,
                   orderCourse: e.OrderCourse,
                 },
