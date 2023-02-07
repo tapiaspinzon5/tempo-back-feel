@@ -339,6 +339,7 @@ exports.getcourses = async (req, res) => {
               idCourse: e.idCourse,
               nameCourse: e.nameCourse,
               descCourse: e.descriptionCourse,
+              urlImgCourse: e.urlImageCourse,
               private: e.private,
               StatusCourse: e.StatusCourse,
               UsrCreation: e.UsrCreation,
