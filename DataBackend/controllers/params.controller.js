@@ -519,6 +519,21 @@ exports.parametros = (req, tipo) => {
         new SpParam("context", req.context, TYPES.Int),
       ]);
 
+    case "spInsertEventAgent":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("idEvent", req.idEvent, TYPES.Int),
+        new SpParam("idActivity", req.idActivity, TYPES.Int),
+        new SpParam("dateOpen", req.dateOpen, TYPES.DateTime),
+        new SpParam("timeToActivity", req.timeToActivity, TYPES.VarChar),
+        new SpParam("typeConten", req.typeConten, TYPES.VarChar),
+        new SpParam("activityProgress", req.activityProgress, TYPES.Int),
+        new SpParam("timeVideo", req.timeVideo, TYPES.VarChar),
+        new SpParam("timeView", req.timeView, TYPES.VarChar),
+        new SpParam("views", req.views, TYPES.Int),
+        new SpParam("context", req.context, TYPES.Int),
+      ]);
+
     default:
       return null;
   }
