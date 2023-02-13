@@ -329,6 +329,7 @@ exports.getcourses = async (req, res) => {
               urlActivity: e.url,
               typeContent: e.idActivityType,
               orderActivity: e.OrderActivity,
+              progressActivity: e?.progressActivity,
             });
           }
 
@@ -351,6 +352,7 @@ exports.getcourses = async (req, res) => {
                   urlActivity: e.url,
                   typeContent: e.idActivityType,
                   orderActivity: e.OrderActivity,
+                  progressActivity: e?.progressActivity,
                 },
               ],
             };
