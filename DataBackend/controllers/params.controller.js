@@ -524,7 +524,7 @@ exports.parametros = (req, tipo) => {
         new SpParam("user", req.requestedBy, TYPES.VarChar),
         new SpParam("idEvent", req.idEvent, TYPES.Int),
         new SpParam("idActivity", req.idActivity, TYPES.Int),
-        new SpParam("dateOpen", req.dateOpen, TYPES.DateTime),
+        new SpParam("dateOpen", req.dateOpen, TYPES.VarChar),
         new SpParam("timeToActivity", req.timeToActivity, TYPES.VarChar),
         new SpParam("typeConten", req.typeConten, TYPES.VarChar),
         new SpParam("progress", req.progress, TYPES.Int),
