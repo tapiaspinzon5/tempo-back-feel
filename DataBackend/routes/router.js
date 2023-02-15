@@ -1,9 +1,24 @@
+const path = require("path");
+const multer = require("multer");
 const routes = require("../controllers/routes.controller");
 const { checkIdccms } = require("../middleware/checkIdccms");
 const { checkJwtToken } = require("../middleware/checkJwtToken");
 const { checkMsToken } = require("../middleware/checkMsToken");
 const { decryptBody } = require("../middleware/decrypt");
 const oauth = require("../middleware/oauth");
+const storage = multer.diskStorage({
+  destination: "./uploads/",
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      Date.now() +
+        "-" +
+        path.basename(file.originalname, path.extname(file.originalname)) +
+        path.extname(file.originalname)
+    );
+  },
+});
+const upload = multer({ storage: storage });
 
 module.exports = (router) => {
   //Login
@@ -91,6 +106,13 @@ module.exports = (router) => {
     checkJwtToken,
     decryptBody,
     routes.getAgentAssignments
+  );
+  router.post(
+    "/su/postuploadfilefb",
+    checkJwtToken,
+    decryptBody,
+    upload.single("attachment"),
+    routes.postUploadFileFB
   );
 
   // router.post("/prueba", decryptBody, routes.prueba);

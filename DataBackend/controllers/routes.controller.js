@@ -1,5 +1,6 @@
 require("dotenv").config();
 const path = require("path");
+const fs = require("fs");
 const CryptoJS = require("crypto-js");
 const { randomInt } = require("crypto");
 const jwt = require("jsonwebtoken");
@@ -10,6 +11,7 @@ const fetch = require("../helpers/fetch.js");
 const { generateToken } = require("../utils/generateToken");
 const { checkEmails } = require("../helpers/checkEmailusers");
 const { orderAssign } = require("../helpers/orderAgentAssign");
+const { bucket } = require("../firebase/firebaseInit");
 
 exports.CallSp = (spName, req, res) => {
   sql
@@ -804,5 +806,122 @@ exports.getAgentAssignments = async (req, res) => {
   } catch (error) {
     console.log(error);
     responsep(2, req, res, error);
+  }
+};
+
+exports.postUploadFileFB = async (req, res) => {
+  // {
+  //   fieldname: 'attachment',
+  //   originalname: 'scorm_1676410520956.jpg',
+  //   encoding: '7bit',
+  //   mimetype: 'image/jpeg',
+  //   destination: './uploads/',
+  //   filename: '1676471136919-scorm_1676410520956.jpg',
+  //   path: 'uploads\\1676471136919-scorm_1676410520956.jpg',
+  //   size: 4228
+  // }
+
+  const { idActivityType } = req.body;
+  let file;
+  // console.log(req.files[0].originalname.split(".").reverse()[0]);
+
+  // 1	Video
+  // 2	Image
+  // 3	Infographic
+  // 4	Simulation
+  // 5	Arcade
+  // 6  imgCourse
+  // 7  imgMeeting
+
+  try {
+    switch (+idActivityType) {
+      case 1:
+        await bucket.upload(`${req.file.path}`, {
+          destination: `video/${req.file.filename}`,
+        });
+        delUpFile(req.file.path);
+        file = bucket.file(`video/${req.file.filename}`);
+        break;
+
+      case 2:
+        await bucket.upload(`${req.file.path}`, {
+          destination: `image/${req.file.filename}`,
+        });
+        delUpFile(req.file.path);
+        file = bucket.file(`image/${req.file.filename}`);
+        break;
+
+      case 3:
+        await bucket.upload(`${req.file.path}`, {
+          destination: `infographic/${req.file.filename}`,
+        });
+        delUpFile(req.file.path);
+        file = bucket.file(`infographic/${req.file.filename}`);
+        break;
+
+      case 4:
+        await bucket.upload(`${req.file.path}`, {
+          destination: `simulation/${req.file.filename}`,
+        });
+        delUpFile(req.file.path);
+        file = bucket.file(`simulation/${req.file.filename}`);
+        break;
+
+      case 5:
+        await bucket.upload(`${req.file.path}`, {
+          destination: `arcade/${req.file.filename}`,
+        });
+        delUpFile(req.file.path);
+        file = bucket.file(`arcade/${req.file.filename}`);
+        break;
+
+      case 6:
+        await bucket.upload(`${req.file.path}`, {
+          destination: `imgCourse/${req.file.filename}`,
+        });
+        delUpFile(req.file.path);
+        file = bucket.file(`imgCourse/${req.file.filename}`);
+        break;
+
+      case 7:
+        await bucket.upload(`${req.file.path}`, {
+          destination: `imgMeeting/${req.file.filename}`,
+        });
+        delUpFile(req.file.path);
+        file = bucket.file(`imgMeeting/${req.file.filename}`);
+        break;
+
+      default:
+        break;
+    }
+
+    // ------------------------------------------------------
+
+    file
+      .makePublic()
+      .then(() => {
+        return file.getMetadata();
+      })
+      .then((results) => {
+        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+        return responsep(1, req, res, publicUrl);
+      })
+      // Utilice el enlace para descargar el archivo en su aplicación Express  })
+      .catch((error) => {
+        console.error(error);
+        // responsep(2, req, res, error);
+      });
+  } catch (error) {
+    responsep(2, req, res, error);
+  }
+};
+
+const delUpFile = async (filePath) => {
+  try {
+    fs.rm(`./${filePath}`, { recursive: true, force: true }, (error) => {
+      if (error) throw new Error(error);
+    });
+  } catch (error) {
+    console.log(error, "delScorm");
   }
 };

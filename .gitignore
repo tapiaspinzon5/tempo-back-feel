@@ -6,5 +6,6 @@ AnalyticsBackend/.vscode
 DataBackend/node_modules
 DataBackend/.env
 DataBackend/.vscode
+DataBackend/firebase/firebase.json
 
 .vscode
