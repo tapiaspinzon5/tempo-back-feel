@@ -110,7 +110,6 @@ module.exports = (router) => {
   router.post(
     "/su/postuploadfilefb",
     checkJwtToken,
-    decryptBody,
     upload.single("attachment"),
     routes.postUploadFileFB
   );
