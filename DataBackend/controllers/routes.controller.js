@@ -5,6 +5,9 @@ const CryptoJS = require("crypto-js");
 const { randomInt } = require("crypto");
 const jwt = require("jsonwebtoken");
 const requestIp = require("request-ip");
+const AdmZip = require("adm-zip");
+const axios = require("axios");
+
 const sql = require("./sql.controller");
 const parametros = require("./params.controller").parametros;
 const fetch = require("../helpers/fetch.js");
@@ -927,5 +930,51 @@ const delUpFile = async (filePath) => {
     });
   } catch (error) {
     console.log(error, "delScorm");
+  }
+};
+
+exports.downloadScorm = async (req, res) => {
+  const { requestedBy, folderName, url } = req.body;
+
+  try {
+    async function get(url) {
+      const options = {
+        method: "GET",
+        url: url,
+        responseType: "arraybuffer",
+      };
+      const { data } = await axios(options);
+      return data;
+    }
+
+    async function getAndUnZip(url) {
+      const zipFileBuffer = await get(url);
+      const zip = new AdmZip(zipFileBuffer);
+      zip.extractAllTo("./scorms/" + folderName, true);
+    }
+    await getAndUnZip(url);
+    responsep(1, req, res, { status: "ok" });
+  } catch (error) {
+    console.log(error, "Download failed");
+    responsep(2, req, res, error);
+  }
+};
+
+exports.delScorm = async (req, res) => {
+  const { folderName } = req.body;
+
+  try {
+    fs.rm(
+      path.join(__dirname, `../scorms/${folderName}`),
+      { recursive: true, force: true },
+      (error) => {
+        if (error) throw new Error(error);
+      }
+    );
+
+    responsep(1, req, res, { status: "ok" });
+  } catch (error) {
+    console.log(error, "delScorm");
+    responsep(2, req, res, error);
   }
 };

@@ -114,8 +114,11 @@ module.exports = (router) => {
     routes.postUploadFileFB
   );
 
+  router.post("/a/downloadscorm", routes.downloadScorm);
+
   // router.post("/prueba", decryptBody, routes.prueba);
 
+  router.post("/a/delscorm", routes.delScorm);
   //CRUD
   MapSpRouter("/sqlget", "spGetCentral");
   MapSpRouter("/sqlupdate", "spUpdateCentral");
