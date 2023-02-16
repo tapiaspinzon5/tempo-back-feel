@@ -23,6 +23,10 @@ exports.orderAssign = (result) => {
         nameLearningPlan: e.nameLearningPlan,
         descriptionLearningPlan: e.descriptionLearningPlan,
         statusLp: e.StatusLp,
+        advanceLp: e.advanceLp,
+        ViewsLp: e?.ViewsLp,
+        ViewsA: e?.ViewsA,
+        ViewsC: e?.ViewsC,
         agent: e.Agent,
         idEmployee: e.idEmployee,
         courses: [
