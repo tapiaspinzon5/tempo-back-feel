@@ -795,6 +795,10 @@ exports.getAgentAssignments = async (req, res) => {
             }
             break;
 
+          case 3:
+            responsep(1, req, res, result);
+            break;
+
           default:
             break;
         }
