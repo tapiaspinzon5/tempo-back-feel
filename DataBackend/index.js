@@ -23,6 +23,8 @@ const { exceptionHandler } = require("./controllers/csrf.handler");
 const { jwt } = require("./controllers/jwt.controller");
 const { configure } = require("./controllers/configure");
 const path = require("path");
+const AdmZip = require("adm-zip");
+const { default: axios } = require("axios");
 const corsOptions = {
   origin: [
     "http://localhost:3000",
@@ -53,6 +55,9 @@ app.use(requestIp.mw());
 // });
 app.use(logger);
 app.use(express.static(path.join(__dirname, "/dist")));
+app.use(express.static(path.join(__dirname, "/scorms")));
+app.use(express.static(path.join(__dirname, "/scorms/morenosalas.11")));
+app.use(express.static("scorms"));
 
 app.use(middleware);
 app.use(morgan("dev"));
@@ -63,9 +68,40 @@ app.use("/api", router);
 
 routes(router);
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist/index.html"));
+// De acuerdo a la ruta que tenga la peticion. servimos el contenido de los scorms.
+app.get("*", async (req, res) => {
+  console.log(req._parsedOriginalUrl.pathname);
+
+  if (req._parsedOriginalUrl.pathname == "/scorm") {
+    const { folderName, context } = req.query;
+
+    if (context == 1) {
+      app.use(express.static(path.join(__dirname, `/scorms/${folderName}`)));
+
+      res.sendFile(
+        path.join(__dirname, "./scorms/" + folderName + "/index.html"),
+        {
+          headers: { dirName: folderName },
+        }
+      );
+    } else {
+      app.use(express.static(path.join(__dirname, `/scorms/${folderName}`)));
+
+      res.sendFile(
+        path.join(__dirname, "./scorms/" + folderName + "/Arcade.htm"),
+        {
+          headers: { dirName: folderName },
+        }
+      );
+    }
+  } else {
+    res.sendFile(path.join(__dirname, "dist/index.html"));
+  }
 });
+
+// app.get("/*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "dist/index.html"));
+// });
 
 app.listen(port, function () {
   console.log(
