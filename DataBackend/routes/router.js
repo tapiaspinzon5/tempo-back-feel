@@ -21,12 +21,12 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 module.exports = (router) => {
-  //Login
+  //Login (obsoleto)
   router.post("/ccmslogin", (req, res) => {
     oauth.login(req, res);
   });
 
-  // Refresh token
+  // Refresh token (obsoleto)
   router.post("/refreshToken", (req, res) => {
     oauth.refresh(req, res);
   });
@@ -114,11 +114,16 @@ module.exports = (router) => {
     routes.postUploadFileFB
   );
 
-  router.post("/a/downloadscorm", routes.downloadScorm);
+  router.post(
+    "/a/downloadscorm",
+    checkJwtToken,
+    decryptBody,
+    routes.downloadScorm
+  );
 
   // router.post("/prueba", decryptBody, routes.prueba);
 
-  router.post("/a/delscorm", routes.delScorm);
+  router.post("/a/delscorm", checkJwtToken, decryptBody, routes.delScorm);
   //CRUD
   MapSpRouter("/sqlget", "spGetCentral");
   MapSpRouter("/sqlupdate", "spUpdateCentral");

@@ -326,6 +326,7 @@ exports.getcourses = async (req, res) => {
 
         // Agrupamos por curso
         result.forEach((e) => {
+          // Si el curso ya existe solo agregamos las actividades.
           if (rows[e.idCourse]) {
             rows[e.idCourse].activities.push({
               idActivity: e.idActivity,
@@ -338,6 +339,7 @@ exports.getcourses = async (req, res) => {
             });
           }
 
+          // Si el curso no existe, lo insertamos junto con la actividad
           if (!rows[e.idCourse]) {
             rows[e.idCourse] = {
               idCampaign: e.idCampaign,
@@ -399,6 +401,7 @@ exports.updateUsers = async (req, res) => {
   const { requestedBy, context, user } = req.body;
 
   try {
+    // extraemos los valores de un objeto.
     const rows = [[...Object.values(user), 1]];
 
     // {
@@ -577,6 +580,7 @@ exports.getLearningPlan = async (req, res) => {
 
         // Agrupamos por learningPlan
         result.forEach((e) => {
+          // Si ya existe el LP, solo insertamos el Curso
           if (rows[e.idLearningPlan]) {
             rows[e.idLearningPlan].courses.push({
               idCourse: e.idCourse,
@@ -588,6 +592,7 @@ exports.getLearningPlan = async (req, res) => {
             });
           }
 
+          // Si no existe el LP, lo insertamos más el curso
           if (!rows[e.idLearningPlan]) {
             rows[e.idLearningPlan] = {
               idLearningPlan: e.idLearningPlan,
@@ -728,6 +733,7 @@ exports.getWaveAssignments = async (req, res) => {
           return responsep(1, req, res, result);
         }
 
+        // Agrupamos dependiendo del tipo de contenido
         result.map((element) => {
           if (element.idlp === null) {
             courses.push(element);
@@ -750,7 +756,7 @@ exports.getWaveAssignments = async (req, res) => {
 
 exports.getAgentAssignments = async (req, res) => {
   const { requestedBy, context } = req.body;
-  const clientIp = "10.168";
+  const clientIp = "10.168"; //Esta quemada para pruebas
   // const clientIp = requestIp.getClientIp(req);
   const firstPartIp = clientIp.split(".")[0];
 
@@ -904,6 +910,7 @@ exports.postUploadFileFB = async (req, res) => {
 
     // ------------------------------------------------------
 
+    // Funcion para hacer publico el contenido que se sube a firebase
     file
       .makePublic()
       .then(() => {
@@ -923,6 +930,7 @@ exports.postUploadFileFB = async (req, res) => {
   }
 };
 
+// Funcion para borrar el archivo cargado a FB en local
 const delUpFile = async (filePath) => {
   try {
     fs.rm(`./${filePath}`, { recursive: true, force: true }, (error) => {
@@ -937,6 +945,7 @@ exports.downloadScorm = async (req, res) => {
   const { requestedBy, folderName, url } = req.body;
 
   try {
+    // Descarga de scorm
     async function get(url) {
       const options = {
         method: "GET",
@@ -947,6 +956,7 @@ exports.downloadScorm = async (req, res) => {
       return data;
     }
 
+    // Extraccion del contenido en local
     async function getAndUnZip(url) {
       const zipFileBuffer = await get(url);
       const zip = new AdmZip(zipFileBuffer);
@@ -960,6 +970,7 @@ exports.downloadScorm = async (req, res) => {
   }
 };
 
+// Eliminacion del scorm en local.
 exports.delScorm = async (req, res) => {
   const { folderName } = req.body;
 

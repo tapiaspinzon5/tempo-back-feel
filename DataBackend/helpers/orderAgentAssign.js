@@ -4,6 +4,7 @@ exports.orderAssign = (result) => {
 
   // Agrupamos por learningPlan
   result.forEach((e) => {
+    // Si existe el LP solo inserta el curso
     if (rows[e.idLp]) {
       rows[e.idLp].courses.push({
         idCourse: e.idCourse,
@@ -17,6 +18,7 @@ exports.orderAssign = (result) => {
       });
     }
 
+    // Si no existe el LP, lo crea por 1a vez
     if (!rows[e.idLp]) {
       rows[e.idLp] = {
         idLp: e.idLp,

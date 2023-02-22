@@ -68,6 +68,7 @@ app.use("/api", router);
 
 routes(router);
 
+// De acuerdo a la ruta que tenga la peticion. servimos el contenido de los scorms.
 app.get("*", async (req, res) => {
   console.log(req._parsedOriginalUrl.pathname);
 
