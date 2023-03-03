@@ -13,12 +13,23 @@ const storage = multer.diskStorage({
       null,
       Date.now() +
         "-" +
-        path.basename(file.originalname, path.extname(file.originalname)) +
-        path.extname(file.originalname)
+        path.basename(
+          file.originalname.replaceAll(" ", ""),
+          path.extname(file.originalname.replaceAll(" ", ""))
+        ) +
+        path.extname(file.originalname.trim())
     );
   },
+  limits: {
+    fileSize: 629145600, // Compliant: 8MB
+  },
 });
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 629145600,
+  },
+});
 
 module.exports = (router) => {
   //Login (obsoleto)
