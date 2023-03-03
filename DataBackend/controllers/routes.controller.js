@@ -360,6 +360,8 @@ exports.getcourses = async (req, res) => {
                   typeContent: e.idActivityType,
                   orderActivity: e.OrderActivity,
                   progressActivity: e?.progressActivity,
+                  progressLastActtivity: e?.progressLastActtivity,
+                  views: e?.views,
                 },
               ],
             };
