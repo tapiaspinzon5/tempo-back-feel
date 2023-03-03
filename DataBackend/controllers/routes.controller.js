@@ -360,6 +360,8 @@ exports.getcourses = async (req, res) => {
                   typeContent: e.idActivityType,
                   orderActivity: e.OrderActivity,
                   progressActivity: e?.progressActivity,
+                  progressLastActtivity: e?.progressLastActtivity,
+                  views: e?.views,
                 },
               ],
             };
@@ -943,6 +945,11 @@ const delUpFile = async (filePath) => {
 
 exports.downloadScorm = async (req, res) => {
   const { requestedBy, folderName, url } = req.body;
+  const MAX_FILES = 10000;
+  const MAX_SIZE = 1000000000; // 1 GB
+  const THRESHOLD_RATIO = 10;
+  let fileCount = 0;
+  let totalSize = 0;
 
   try {
     // Descarga de scorm
@@ -960,10 +967,46 @@ exports.downloadScorm = async (req, res) => {
     async function getAndUnZip(url) {
       const zipFileBuffer = await get(url);
       const zip = new AdmZip(zipFileBuffer);
-      zip.extractAllTo("./scorms/" + folderName, true);
+
+      // Me retorna todos los elementos que contiene el zip
+      let zipEntries = zip.getEntries();
+
+      // Recorremos c/u de los elementos para validarlos
+      zipEntries.forEach(function (zipEntry) {
+        fileCount++;
+        if (fileCount > MAX_FILES) {
+          throw "Reached max. number of files";
+        }
+
+        let entrySize = zipEntry.getData().length;
+        totalSize += entrySize;
+        if (totalSize > MAX_SIZE) {
+          throw "Reached max. size";
+        }
+
+        // let compressionRatio = entrySize / zipEntry.header.compressedSize;
+        // if (compressionRatio > THRESHOLD_RATIO) {
+        //   throw "Reached max. compression ratio";
+        // }
+
+        // if (!zipEntry.isDirectory) {
+        //   zip.extractEntryTo(zipEntry.entryName, "./scorms/" + folderName);
+        // }
+        zip.extractAllTo("./scorms/" + folderName, true);
+      });
     }
     await getAndUnZip(url);
-    responsep(1, req, res, { status: "ok" });
+    const file = await fs.promises.readdir("./scorms/" + folderName);
+
+    res.json({
+      status: "ok",
+      file: file.filter((el) => el.includes(".htm"))[0],
+    });
+
+    // responsep(1, req, res, {
+    //   status: "ok",
+    //   file: file.filter((el) => el.includes(".htm"))[0],
+    // });
   } catch (error) {
     console.log(error, "Download failed");
     responsep(2, req, res, error);

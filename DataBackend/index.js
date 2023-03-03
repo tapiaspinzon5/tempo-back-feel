@@ -30,6 +30,7 @@ const corsOptions = {
     "http://localhost:3000",
     "https://feelsdev.teleperformance.co",
     "https://tpfeeltest.teleperformance.co",
+    "https://feeldev.teleperformance.co",
   ],
   credentials: true,
 };
@@ -56,7 +57,6 @@ app.use(requestIp.mw());
 app.use(logger);
 app.use(express.static(path.join(__dirname, "/dist")));
 app.use(express.static(path.join(__dirname, "/scorms")));
-app.use(express.static(path.join(__dirname, "/scorms/morenosalas.11")));
 app.use(express.static("scorms"));
 
 app.use(middleware);
@@ -86,9 +86,10 @@ app.get("*", async (req, res) => {
       );
     } else {
       app.use(express.static(path.join(__dirname, `/scorms/${folderName}`)));
+      const { file } = req.query;
 
       res.sendFile(
-        path.join(__dirname, "./scorms/" + folderName + "/Arcade.htm"),
+        path.join(__dirname, "./scorms/" + folderName + "/" + file),
         {
           headers: { dirName: folderName },
         }
