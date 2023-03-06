@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const logger = require("./logger");
 
 exports.generateToken = (payload) => {
   try {
@@ -8,6 +9,6 @@ exports.generateToken = (payload) => {
 
     return token;
   } catch (error) {
-    console.log(error);
+    logger.error(error);
   }
 };

@@ -16,7 +16,7 @@ const helmet = require("helmet");
 const router = express.Router();
 const routes = require("./routes/router");
 const {
-  logger,
+  loggerMiddleware,
   middleware,
   errorHandler,
 } = require("./controllers/err.handler");
@@ -26,6 +26,7 @@ const { configure } = require("./controllers/configure");
 const path = require("path");
 const AdmZip = require("adm-zip");
 const { default: axios } = require("axios");
+const logger = require("./utils/logger");
 const corsOptions = {
   origin: [
     "http://localhost:3000",
@@ -56,7 +57,7 @@ app.use(hpp());
 // configure((call) => {
 //   app.use(jwt());
 // });
-app.use(logger);
+app.use(loggerMiddleware);
 app.use(express.static(path.join(__dirname, "/dist")));
 app.use(express.static(path.join(__dirname, "/scorms")));
 app.use(express.static("scorms"));
@@ -72,8 +73,6 @@ routes(router);
 
 // De acuerdo a la ruta que tenga la peticion. servimos el contenido de los scorms.
 app.get("*", async (req, res) => {
-  console.log(req._parsedOriginalUrl.pathname);
-
   if (req._parsedOriginalUrl.pathname == "/scorm") {
     const { folderName, context } = req.query;
 
@@ -107,11 +106,5 @@ app.get("*", async (req, res) => {
 // });
 
 app.listen(port, function () {
-  console.log(
-    properties.ENV,
-    ": Listening on port",
-    port,
-    "- start:",
-    Date(Date.now()).toString()
-  );
+  logger.info(`${properties.ENV}: Listening on port ${port}`);
 });

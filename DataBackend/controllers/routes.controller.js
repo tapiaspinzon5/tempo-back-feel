@@ -15,6 +15,7 @@ const { generateToken } = require("../utils/generateToken");
 const { checkEmails } = require("../helpers/checkEmailusers");
 const { orderAssign } = require("../helpers/orderAgentAssign");
 const { bucket } = require("../firebase/firebaseInit");
+const logger = require("../utils/logger");
 
 exports.CallSp = (spName, req, res) => {
   sql
@@ -23,7 +24,7 @@ exports.CallSp = (spName, req, res) => {
       responsep(1, req, res, result);
     })
     .catch((err) => {
-      console.log(err, "sp");
+      logger.error(`${err} - sp`);
       responsep(2, req, res, err);
     });
 };
@@ -71,7 +72,7 @@ let responsep = (tipo, req, res, resultado, cookie) => {
         );
       resolve("Enviado");
     } else if (tipo == 2) {
-      console.log("Error at:", new Date(), "res: ", resultado);
+      logger.error(resultado);
       // res.status(400).json(resultado);
       res
         .status(400)
@@ -159,7 +160,7 @@ exports.login = async (req, res) => {
       // responsep(1, req, res, dataEncrypted);
     })
     .catch((err) => {
-      console.log(err, "sp");
+      logger.error(`${err} - sp`);
       responsep(2, req, res, err);
     });
 };
@@ -193,11 +194,11 @@ exports.createCampaign = async (req, res) => {
         responsep(1, req, res, result);
       })
       .catch((err) => {
-        console.log(err, "sp");
+        logger.error(`${err} - sp`);
         responsep(2, req, res, err);
       });
   } catch (error) {
-    console.log(error);
+    logger.error(`${err} - sp`);
     responsep(2, req, res, error);
   }
 };
@@ -234,11 +235,11 @@ exports.updateCampaign = async (req, res) => {
         responsep(1, req, res, result);
       })
       .catch((err) => {
-        console.log(err, "sp");
+        logger.error(`${err} - sp`);
         responsep(2, req, res, err);
       });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     responsep(2, req, res, error);
   }
 };
@@ -283,11 +284,11 @@ exports.postCreateCourse = async (req, res) => {
         responsep(1, req, res, result);
       })
       .catch((err) => {
-        console.log(err, "sp");
+        logger.error(`${err} - sp`);
         responsep(2, req, res, err);
       });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     responsep(2, req, res, error);
   }
 };
@@ -390,11 +391,11 @@ exports.getcourses = async (req, res) => {
         responsep(1, req, res, coursesWithActivityOrdered);
       })
       .catch((err) => {
-        console.log(err, "sp");
+        logger.error(`${err} - sp`);
         responsep(2, req, res, err);
       });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     responsep(2, req, res, error);
   }
 };
@@ -438,11 +439,11 @@ exports.updateUsers = async (req, res) => {
         responsep(1, req, res, result);
       })
       .catch((err) => {
-        console.log(err, "sp");
+        logger.error(`${err} - sp`);
         responsep(2, req, res, err);
       });
   } catch (error) {
-    console.log(error, "error");
+    logger.error(error);
     responsep(2, req, res, error);
   }
 };
@@ -493,11 +494,11 @@ exports.postUpdateCourse = async (req, res) => {
         responsep(1, req, res, result);
       })
       .catch((err) => {
-        console.log(err, "sp");
+        logger.error(`${err} - sp`);
         responsep(2, req, res, err);
       });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     responsep(2, req, res, error);
   }
 };
@@ -522,11 +523,11 @@ exports.insertUsers = async (req, res) => {
         responsep(1, req, res, result);
       })
       .catch((err) => {
-        console.log(err, "sp");
+        logger.error(`${err} - sp`);
         responsep(2, req, res, err);
       });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     responsep(2, req, res, error);
   }
 };
@@ -554,11 +555,11 @@ exports.postCreateLP = async (req, res) => {
         responsep(1, req, res, result);
       })
       .catch((err) => {
-        console.log(err, "sp");
+        logger.error(`${err} - sp`);
         responsep(2, req, res, err);
       });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     responsep(2, req, res, error);
   }
 };
@@ -640,11 +641,11 @@ exports.getLearningPlan = async (req, res) => {
         responsep(1, req, res, learningPlanWcoursesOrdered);
       })
       .catch((err) => {
-        console.log(err, "sp");
+        logger.error(`${err} - sp`);
         responsep(2, req, res, err);
       });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     responsep(2, req, res, error);
   }
 };
@@ -680,11 +681,11 @@ exports.updateLp = async (req, res) => {
         responsep(1, req, res, result);
       })
       .catch((err) => {
-        console.log(err, "sp");
+        logger.error(`${err} - sp`);
         responsep(2, req, res, err);
       });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     responsep(2, req, res, error);
   }
 };
@@ -708,11 +709,11 @@ exports.postInsertLPCWave = async (req, res) => {
         responsep(1, req, res, result);
       })
       .catch((err) => {
-        console.log(err, "sp");
+        logger.error(`${err} - sp`);
         responsep(2, req, res, err);
       });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     responsep(2, req, res, error);
   }
 };
@@ -730,7 +731,6 @@ exports.getWaveAssignments = async (req, res) => {
         parametros({ requestedBy, idWave }, "spQueryLpWave")
       )
       .then(async (result) => {
-        console.log(result);
         if (result.length === 0) {
           return responsep(1, req, res, result);
         }
@@ -747,11 +747,11 @@ exports.getWaveAssignments = async (req, res) => {
         responsep(1, req, res, { courses, learningPlan });
       })
       .catch((err) => {
-        console.log(err, "sp");
+        logger.error(`${err} - sp`);
         responsep(2, req, res, err);
       });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     responsep(2, req, res, error);
   }
 };
@@ -815,11 +815,11 @@ exports.getAgentAssignments = async (req, res) => {
         }
       })
       .catch((err) => {
-        console.log(err, "sp");
+        logger.error(`${err} - sp`);
         responsep(2, req, res, err);
       });
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     responsep(2, req, res, error);
   }
 };
@@ -924,7 +924,7 @@ exports.postUploadFileFB = async (req, res) => {
       })
       // Utilice el enlace para descargar el archivo en su aplicación Express  })
       .catch((error) => {
-        console.error(error);
+        logger.error(error);
         // responsep(2, req, res, error);
       });
   } catch (error) {
@@ -939,7 +939,7 @@ const delUpFile = async (filePath) => {
       if (error) throw new Error(error);
     });
   } catch (error) {
-    console.log(error, "delScorm");
+    logger.error(`${error}, delScorm`);
   }
 };
 
@@ -1003,7 +1003,7 @@ exports.downloadScorm = async (req, res) => {
       file: file.filter((el) => el.includes(".htm"))[0],
     });
   } catch (error) {
-    console.log(error, "Download failed");
+    logger.error(`${error}, "Download failed"`);
     responsep(2, req, res, error);
   }
 };
@@ -1023,7 +1023,8 @@ exports.delScorm = async (req, res) => {
 
     responsep(1, req, res, { status: "ok" });
   } catch (error) {
-    console.log(error, "delScorm");
+    logger.error(`${error}, "delScorm"`);
+
     responsep(2, req, res, error);
   }
 };

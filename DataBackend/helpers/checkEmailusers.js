@@ -1,5 +1,6 @@
 const { parametros } = require("../controllers/params.controller");
 const sql = require("../controllers/sql.controller");
+const logger = require("../utils/logger");
 
 exports.checkEmails = (rows) => {
   return sql
@@ -11,7 +12,7 @@ exports.checkEmails = (rows) => {
       return activeUsers;
     })
     .catch((err) => {
-      console.log(err, "spQueryUsersDB");
+      logger.error(`${err}, spQueryUsersDB`);
       throw new Error("spQueryUsersDB error: " + err);
     });
 };

@@ -3,6 +3,7 @@ const redirect = require("../controllers/redirect.controller");
 const sql = require("../controllers/sql.controller");
 const parametros = require("../controllers/params.controller").parametros;
 const CryptoJS = require("crypto-js");
+const logger = require("../utils/logger");
 
 const url = "https://oauth.teleperformance.co/api/";
 
@@ -55,12 +56,12 @@ function login(req, res) {
           responsep(1, req, res, dataEncrypted);
         })
         .catch((err) => {
-          console.log(err, "sp");
+          logger.error(`${err} - sp`);
           responsep(2, req, res, err);
         });
     })
     .catch((err) => {
-      console.log(err, "sp");
+      logger.error(`${err} - sp`);
       responsep(2, req, res, err);
     });
 }
@@ -90,12 +91,7 @@ let responsep = (tipo, req, res, resultado) => {
       res.status(200).json(resultado);
       resolve(200);
     } else if (tipo == 2) {
-      console.log(
-        "Error at:",
-        date,
-        "res: ",
-        resultado.msg || resultado.message
-      );
+      logger.error(resultado.msg || resultado.messag);
       res
         .status(resultado.code || 404)
         .json(resultado.msg || resultado.message);
@@ -122,7 +118,7 @@ function oauthOther(req, res, next) {
       }
     })
     .catch((error) => {
-      console.log(error);
+      logger.error(error);
       responsep(2, req, res, error);
     });
 }

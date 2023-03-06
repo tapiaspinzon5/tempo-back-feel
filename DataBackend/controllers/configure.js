@@ -1,4 +1,5 @@
 const redirect = require("../controllers/redirect.controller");
+const logger = require("../utils/logger");
 require("dotenv").config();
 
 async function configure(call) {
@@ -20,7 +21,7 @@ async function configure(call) {
       process.env.IV = data.data.iv;
       call("terminado");
     })
-    .catch((error) => console.log(error));
+    .catch((error) => logger.error(error));
 }
 
 module.exports = { configure };
