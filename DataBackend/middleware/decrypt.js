@@ -5,7 +5,7 @@ function decryptBody(req, res, next) {
   const key = process.env.CRYPTOJS_SECRET;
 
   let hash1 = req.headers.refreshauthorization.split("&#&")[1];
-  let hash2 = CryptoJS.MD5(req.body.data).toString();
+  let hash2 = CryptoJS.SHA512(req.body.data).toString();
 
   if (hash1 === hash2) {
     req.body = JSON.parse(

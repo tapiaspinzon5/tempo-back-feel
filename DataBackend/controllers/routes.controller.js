@@ -66,7 +66,7 @@ let responsep = (tipo, req, res, resultado, cookie) => {
         .json(
           CryptoJS.AES.encrypt(
             JSON.stringify(resultado),
-            `secret key 123`
+            process.env.CRYPTOJS_SECRET
           ).toString()
         );
       resolve("Enviado");
@@ -78,7 +78,7 @@ let responsep = (tipo, req, res, resultado, cookie) => {
         .json(
           CryptoJS.AES.encrypt(
             JSON.stringify(resultado),
-            `secret key 123`
+            process.env.CRYPTOJS_SECRET
           ).toString()
         );
     }
@@ -998,15 +998,10 @@ exports.downloadScorm = async (req, res) => {
     await getAndUnZip(url);
     const file = await fs.promises.readdir("./scorms/" + folderName);
 
-    res.json({
+    responsep(1, req, res, {
       status: "ok",
       file: file.filter((el) => el.includes(".htm"))[0],
     });
-
-    // responsep(1, req, res, {
-    //   status: "ok",
-    //   file: file.filter((el) => el.includes(".htm"))[0],
-    // });
   } catch (error) {
     console.log(error, "Download failed");
     responsep(2, req, res, error);
