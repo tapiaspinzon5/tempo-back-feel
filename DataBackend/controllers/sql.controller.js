@@ -1,4 +1,5 @@
 const properties = require("../properties/properties");
+const logger = require("../utils/logger");
 const Connection = require("tedious").Connection;
 const Request = require("tedious").Request;
 const TYPES = require("tedious").TYPES;
@@ -8,25 +9,22 @@ exports.query = (storedProcedure, parametros) => {
     let conn = new Connection(properties.configtest);
     conn.on("connect", (err) => {
       if (err) {
-        console.log(err);
+        logger.error(err);
         reject("error while connecting server");
       } else {
         let request = new Request(storedProcedure, (err, rowCount, rows) => {
           if (err) {
-            console.log(
-              "error proc:",
-              err.procName,
-              " - message: ",
-              err.message,
-              " - procline",
-              err.lineNumber
+            logger.error(
+              `error proc: ${err.procName} - message: ${err.message} - procline: ${err.lineNumbe}`
             );
             reject("error in query execution");
           } else {
             conn.close();
             injectjson(rows).then((valor) => {
               try {
-                const temp = valor[0].Result ? JSON.parse(valor[0].Result) : valor;
+                const temp = valor[0].Result
+                  ? JSON.parse(valor[0].Result)
+                  : valor;
                 resolve(temp);
               } catch (error) {
                 resolve(valor);
@@ -41,7 +39,7 @@ exports.query = (storedProcedure, parametros) => {
               request.addParameter(valor.nombre, valor.tipo, valor.valor);
             });
           } catch (error) {
-            console.log(error, "ggsgsgsgsgsgsgsg");
+            logger.error(error);
           }
         }
 
@@ -49,18 +47,18 @@ exports.query = (storedProcedure, parametros) => {
           conn.close();
         });
         request.on("error", (err) => {
-          console.log(err);
+          logger.error(err);
           reject(err);
         });
         try {
           conn.callProcedure(request);
         } catch (error) {
-          console.log(error);
+          logger.error(error);
         }
       }
     });
     conn.on("error", (err) => {
-      console.log(err);
+      logger.error(err);
       reject(err);
       reject("error connecting server");
       conn.close();

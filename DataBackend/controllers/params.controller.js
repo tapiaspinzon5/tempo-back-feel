@@ -1,3 +1,5 @@
+const logger = require("../utils/logger");
+
 const TYPES = require("tedious").TYPES;
 
 let parametrizacion = (data) => {
@@ -8,7 +10,7 @@ let parametrizacion = (data) => {
       tipo: type,
     }));
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return error;
   }
 };
@@ -45,7 +47,7 @@ let SpParamTable = (nameParam, colums, rows) => {
 
     return obj.table;
   } catch (error) {
-    console.log(error, "Tipo Tabla");
+    logger.error(`${error} Tipo Tabla`);
     return error;
   }
 };
@@ -69,7 +71,7 @@ let SpParamTable2 = (nameParam, colums, rows) => {
     };
     //  obj.table;
   } catch (error) {
-    console.log(error, "Tipo Tabla");
+    logger.error(`${error} Tipo Tabla`);
     return error;
   }
 };
@@ -559,7 +561,7 @@ let parame = (data) => {
     });
     return obj.table;
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     return error;
   }
 };
@@ -649,7 +651,5 @@ let schemaRows = (schema, valor) => {
       rows: c,
     };
   }
-
-  console.log(table, "ssssssssss");
   return table;
 };
