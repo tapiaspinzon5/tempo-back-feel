@@ -354,6 +354,7 @@ exports.getcourses = async (req, res) => {
               private: e.private,
               StatusCourse: e.StatusCourse,
               UsrCreation: e.UsrCreation,
+              progressLastCourse: e?.progressLastCourse,
               activities: [
                 {
                   idActivity: e.idActivity,
