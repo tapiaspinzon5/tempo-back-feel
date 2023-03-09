@@ -60,7 +60,6 @@ app.use(hpp());
 app.use(loggerMiddleware);
 app.use(express.static(path.join(__dirname, "/dist")));
 app.use(express.static(path.join(__dirname, "/scorms")));
-app.use(express.static("scorms"));
 
 app.use(middleware);
 app.use(morgan("dev"));
@@ -72,38 +71,39 @@ app.use("/api", router);
 routes(router);
 
 // De acuerdo a la ruta que tenga la peticion. servimos el contenido de los scorms.
-app.get("*", async (req, res) => {
-  if (req._parsedOriginalUrl.pathname == "/scorm") {
-    const { folderName, context } = req.query;
+// De acuerdo a la ruta que tenga la peticion. servimos el contenido de los scorms.
+// app.get("*", async (req, res) => {
+//   if (req._parsedOriginalUrl.pathname == "/scorm") {
+//     const { folderName, context } = req.query;
 
-    if (context == 1) {
-      app.use(express.static(path.join(__dirname, `/scorms/${folderName}`)));
+//     if (context == 1) {
+//       app.use(express.static(path.join(__dirname, `/scorms/${folderName}`)));
 
-      res.sendFile(
-        path.join(__dirname, "./scorms/" + folderName + "/index.html"),
-        {
-          headers: { dirName: folderName },
-        }
-      );
-    } else {
-      app.use(express.static(path.join(__dirname, `/scorms/${folderName}`)));
-      const { file } = req.query;
+//       res.sendFile(
+//         path.join(__dirname, "./scorms/" + folderName + "/index.html"),
+//         {
+//           headers: { dirName: folderName },
+//         }
+//       );
+//     } else {
+//       app.use(express.static(path.join(__dirname, `/scorms/${folderName}`)));
+//       const { file } = req.query;
 
-      res.sendFile(
-        path.join(__dirname, "./scorms/" + folderName + "/" + file),
-        {
-          headers: { dirName: folderName },
-        }
-      );
-    }
-  } else {
-    res.sendFile(path.join(__dirname, "dist/index.html"));
-  }
-});
-
-// app.get("/*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "dist/index.html"));
+//       res.sendFile(
+//         path.join(__dirname, "./scorms/" + folderName + "/" + file),
+//         {
+//           headers: { dirName: folderName },
+//         }
+//       );
+//     }
+//   } else {
+//     res.sendFile(path.join(__dirname, "dist/index.html"));
+//   }
 // });
+
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist/index.html"));
+});
 
 app.listen(port, function () {
   logger.info(`${properties.ENV}: Listening on port ${port}`);
