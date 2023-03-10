@@ -15,6 +15,7 @@ exports.orderAssign = (result) => {
         statusCourse: e.StatusCourse,
         descriptionCourse: e.descriptionCourse,
         advanceAgent: e.advanceAgent,
+        progressLastCourse: e?.progressLastCourse,
       });
     }
 
@@ -41,6 +42,7 @@ exports.orderAssign = (result) => {
             statusCourse: e.StatusCourse,
             descriptionCourse: e.descriptionCourse,
             advanceAgent: e.advanceAgent,
+            progressLastCourse: e?.progressLastCourse,
           },
         ],
       };
