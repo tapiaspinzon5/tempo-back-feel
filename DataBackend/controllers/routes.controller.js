@@ -337,7 +337,7 @@ exports.getcourses = async (req, res) => {
               typeContent: e.idActivityType,
               orderActivity: e.OrderActivity,
               progressActivity: e?.progressActivity,
-              progressLastCourse: e?.progressLastCourse,
+              progressLastActtivity: e?.progressLastActtivity,
               views: e?.views,
             });
           }
