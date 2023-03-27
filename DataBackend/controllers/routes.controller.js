@@ -3,10 +3,8 @@ const path = require("path");
 const fs = require("fs");
 const CryptoJS = require("crypto-js");
 const { randomInt } = require("crypto");
-const jwt = require("jsonwebtoken");
-const requestIp = require("request-ip");
-const AdmZip = require("adm-zip");
 const axios = require("axios");
+const decompress = require("decompress");
 
 const sql = require("./sql.controller");
 const parametros = require("./params.controller").parametros;
@@ -111,9 +109,12 @@ exports.login = async (req, res) => {
   //   process.env.JWT_SECRET
   // );
 
-  const token = generateToken({
-    email: graphResponse.onPremisesUserPrincipalName,
-  });
+  const token = generateToken(
+    {
+      email: graphResponse.onPremisesUserPrincipalName,
+    },
+    "9h"
+  );
 
   sql
     .query(
@@ -948,58 +949,57 @@ const delUpFile = async (filePath) => {
 
 exports.downloadScorm = async (req, res) => {
   const { requestedBy, folderName, url } = req.body;
-  const MAX_FILES = 10000;
-  const MAX_SIZE = 1000000000; // 1 GB
-  const THRESHOLD_RATIO = 10;
-  let fileCount = 0;
-  let totalSize = 0;
 
   try {
     // Descarga de scorm
-    async function get(url) {
+    async function get(url, folderName) {
       const options = {
         method: "GET",
         url: url,
         responseType: "arraybuffer",
       };
       const { data } = await axios(options);
-      return data;
+      return await createFolder(data, folderName);
     }
 
-    // Extraccion del contenido en local
-    async function getAndUnZip(url) {
-      const zipFileBuffer = await get(url);
-      const zip = new AdmZip(zipFileBuffer);
-
-      // Me retorna todos los elementos que contiene el zip
-      let zipEntries = zip.getEntries();
-
-      // Recorremos c/u de los elementos para validarlos
-      zipEntries.forEach(function (zipEntry) {
-        fileCount++;
-        if (fileCount > MAX_FILES) {
-          throw "Reached max. number of files";
-        }
-
-        let entrySize = zipEntry.getData().length;
-        totalSize += entrySize;
-        if (totalSize > MAX_SIZE) {
-          throw "Reached max. size";
-        }
-
-        // let compressionRatio = entrySize / zipEntry.header.compressedSize;
-        // if (compressionRatio > THRESHOLD_RATIO) {
-        //   throw "Reached max. compression ratio";
-        // }
-
-        // if (!zipEntry.isDirectory) {
-        //   zip.extractEntryTo(zipEntry.entryName, "./scorms/" + folderName);
-        // }
-        zip.extractAllTo("./scorms/" + folderName, true);
+    // creacion de la carpeta en caso que no exista
+    // Se envuelve en una promesa para poder retornar el resultado
+    async function createFolder(fileBuffer, folderName) {
+      return new Promise((resolve, reject) => {
+        // verifica si la carpeta existe.
+        fs.access("./scorms/" + folderName, fs.constants.F_OK, (err) => {
+          if (err) {
+            // Crea la carpeta.
+            fs.mkdir("./scorms/" + folderName, async (err) => {
+              if (err) {
+                logger.error("Error al crear el directorio:", err);
+                reject("Error al crear el directorio", err);
+                throw err;
+              }
+              logger.info("Directorio creado correctamente");
+              resolve(await decompressFile(fileBuffer));
+              return;
+            });
+          } else {
+            reject("La carpeta existe");
+          }
+        });
       });
     }
-    await getAndUnZip(url);
-    const file = await fs.promises.readdir("./scorms/" + folderName);
+
+    // Descarga de scorm
+    async function decompressFile(compressedFile) {
+      return decompress(compressedFile, "./scorms/" + folderName)
+        .then(async (files) => {
+          logger.info(`Archivo descomprimido en ${"./scorms/" + folderName}`);
+          return await fs.promises.readdir("./scorms/" + folderName);
+        })
+        .catch((err) => {
+          logger.error("Error al descomprimir el archivo:", err);
+        });
+    }
+
+    const file = await get(url, folderName);
 
     responsep(1, req, res, {
       status: "ok",
@@ -1030,4 +1030,21 @@ exports.delScorm = async (req, res) => {
 
     responsep(2, req, res, error);
   }
+};
+
+exports.generatemcToken = async (req, res) => {
+  const { requestedBy } = req.body;
+
+  const token = generateToken(
+    {
+      email: requestedBy,
+    },
+    "2m"
+  );
+
+  responsep(1, req, res, token);
+};
+
+exports.checkmctoken = async (req, res) => {
+  return res.status(200).json({ ok: true, message: "valid token" });
 };

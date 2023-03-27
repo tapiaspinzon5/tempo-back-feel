@@ -14,8 +14,10 @@ const storage = multer.diskStorage({
       Date.now() +
         "-" +
         path.basename(
-          file.originalname.replaceAll(" ", ""),
-          path.extname(file.originalname.replaceAll(" ", ""))
+          file.originalname.replaceAll(" ", "").replace(/[^a-zA-Z0-9 ]/g, ""),
+          path.extname(
+            file.originalname.replaceAll(" ", "").replace(/[^a-zA-Z0-9 ]/g, "")
+          )
         ) +
         path.extname(file.originalname.trim())
     );
@@ -131,6 +133,15 @@ module.exports = (router) => {
     decryptBody,
     routes.downloadScorm
   );
+
+  router.post(
+    "/a/generatemctoken",
+    checkJwtToken,
+    decryptBody,
+    routes.generatemcToken
+  );
+
+  router.post("/a/checkmctoken", checkJwtToken, routes.checkmctoken);
 
   // router.post("/prueba", decryptBody, routes.prueba);
 
