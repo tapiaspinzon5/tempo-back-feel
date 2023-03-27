@@ -134,6 +134,15 @@ module.exports = (router) => {
     routes.downloadScorm
   );
 
+  router.post(
+    "/a/generatemctoken",
+    checkJwtToken,
+    decryptBody,
+    routes.generatemcToken
+  );
+
+  router.post("/a/checkmctoken", checkJwtToken, routes.checkmctoken);
+
   // router.post("/prueba", decryptBody, routes.prueba);
 
   router.post("/a/delscorm", checkJwtToken, decryptBody, routes.delScorm);

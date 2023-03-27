@@ -109,9 +109,12 @@ exports.login = async (req, res) => {
   //   process.env.JWT_SECRET
   // );
 
-  const token = generateToken({
-    email: graphResponse.onPremisesUserPrincipalName,
-  });
+  const token = generateToken(
+    {
+      email: graphResponse.onPremisesUserPrincipalName,
+    },
+    "9h"
+  );
 
   sql
     .query(
@@ -1027,4 +1030,21 @@ exports.delScorm = async (req, res) => {
 
     responsep(2, req, res, error);
   }
+};
+
+exports.generatemcToken = async (req, res) => {
+  const { requestedBy } = req.body;
+
+  const token = generateToken(
+    {
+      email: requestedBy,
+    },
+    "2m"
+  );
+
+  responsep(1, req, res, token);
+};
+
+exports.checkmctoken = async (req, res) => {
+  return res.status(200).json({ ok: true, message: "valid token" });
 };
