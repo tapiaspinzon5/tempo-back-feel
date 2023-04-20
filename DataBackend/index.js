@@ -33,6 +33,7 @@ const corsOptions = {
     "https://feelsdev.teleperformance.co",
     "https://tpfeeltest.teleperformance.co",
     "https://feeldev.teleperformance.co",
+    "https://feel.teleperformance.co",
   ],
   credentials: true,
 };

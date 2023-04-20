@@ -536,6 +536,29 @@ exports.parametros = (req, tipo) => {
         new SpParam("context", req.context, TYPES.Int),
       ]);
 
+    case "spSimulation":
+      return parametrizacion([
+        new SpParam("nameSimulation", req.simName, TYPES.VarChar),
+        new SpParam("descSimulation", req.simDesc, TYPES.VarChar),
+        new SpParam("urlSimulation", req.url, TYPES.VarChar),
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("idSimulation", req.simId, TYPES.Int),
+        new SpParam("context", req.context, TYPES.Int),
+      ]);
+
+    case "spQuerySimulation":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("idSimulation", req.simId, TYPES.Int),
+        new SpParam("context", req.context, TYPES.Int),
+      ]);
+
+    case "spInsertRegistrySimulation":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("idSimulation", req.simId, TYPES.Int),
+      ]);
+
     default:
       return null;
   }

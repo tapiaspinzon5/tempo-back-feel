@@ -5,6 +5,7 @@ const CryptoJS = require("crypto-js");
 const { randomInt } = require("crypto");
 const axios = require("axios");
 const decompress = require("decompress");
+const { v4: uuidv4 } = require("uuid");
 
 const sql = require("./sql.controller");
 const parametros = require("./params.controller").parametros;
@@ -1047,4 +1048,155 @@ exports.generatemcToken = async (req, res) => {
 
 exports.checkmctoken = async (req, res) => {
   return res.status(200).json({ ok: true, message: "valid token" });
+};
+
+exports.postUploadANScorm = async (req, res) => {
+  // {
+  //   fieldname: 'attachment',
+  //   originalname: 'scorm_1676410520956.jpg',
+  //   encoding: '7bit',
+  //   mimetype: 'image/jpeg',
+  //   destination: './uploads/',
+  //   filename: '1676471136919-scorm_1676410520956.jpg',
+  //   path: 'uploads\\1676471136919-scorm_1676410520956.jpg',
+  //   size: 4228
+  // }
+
+  const { simName, simDesc, requestedBy, context, simId, simUrl } = req.body;
+
+  try {
+    switch (context) {
+      case "1":
+        const folderName = uuidv4();
+
+        async function decompressFile(compressedFile) {
+          return decompress(compressedFile, "./scorms/ainesting/" + folderName)
+            .then(async (files) => {
+              logger.info(
+                `Archivo descomprimido en ${"./scorms/ainesting/" + folderName}`
+              );
+              delUpFile(req.file.path);
+              return await fs.promises.readdir(
+                "./scorms/ainesting/" + folderName
+              );
+            })
+            .catch((err) => {
+              logger.error("Error al descomprimir el archivo:", err);
+            });
+        }
+
+        const files = await decompressFile(req.file.path);
+        const file = files.filter((el) => el.includes(".htm"))[0];
+        const url = `http://localhost:4343/ainesting/${folderName}/${file}`;
+
+        sql
+          .query(
+            "spSimulation",
+            parametros(
+              { simName, simDesc, url, requestedBy, simId, context },
+              "spSimulation"
+            )
+          )
+          .then(async (result) => {
+            responsep(1, req, res, result);
+          })
+          .catch((err) => {
+            logger.error(`${err} - sp`);
+            responsep(2, req, res, err);
+          });
+
+        break;
+      case "2":
+        if (req.file) {
+          const folderName = uuidv4();
+
+          async function decompressFile(compressedFile) {
+            return decompress(
+              compressedFile,
+              "./scorms/ainesting/" + folderName
+            )
+              .then(async (files) => {
+                logger.info(
+                  `Archivo descomprimido en ${
+                    "./scorms/ainesting/" + folderName
+                  }`
+                );
+                delUpFile(req.file.path);
+                delUpFile(
+                  `./scorms/ainesting/${simUrl.split("/").reverse()[1]}`
+                );
+                return await fs.promises.readdir(
+                  "./scorms/ainesting/" + folderName
+                );
+              })
+              .catch((err) => {
+                logger.error("Error al descomprimir el archivo:", err);
+              });
+          }
+
+          const files = await decompressFile(req.file.path);
+          const file = files.filter((el) => el.includes(".htm"))[0];
+          const url = `http://localhost:4343/ainesting/${folderName}/${file}`;
+
+          sql
+            .query(
+              "spSimulation",
+              parametros(
+                { simName, simDesc, url, requestedBy, simId, context },
+                "spSimulation"
+              )
+            )
+            .then(async (result) => {
+              responsep(1, req, res, result);
+            })
+            .catch((err) => {
+              logger.error(`${err} - sp`);
+              responsep(2, req, res, err);
+            });
+        } else {
+          sql
+            .query(
+              "spSimulation",
+              parametros(
+                { simName, simDesc, url: simUrl, requestedBy, simId, context },
+                "spSimulation"
+              )
+            )
+            .then(async (result) => {
+              responsep(1, req, res, result);
+            })
+            .catch((err) => {
+              logger.error(`${err} - sp`);
+              responsep(2, req, res, err);
+            });
+        }
+
+        break;
+      case "3":
+        sql
+          .query(
+            "spSimulation",
+            parametros(
+              { simName, simDesc, url: simUrl, requestedBy, simId, context },
+              "spSimulation"
+            )
+          )
+          .then(async (result) => {
+            delUpFile(`./scorms/ainesting/${simUrl.split("/").reverse()[1]}`);
+            responsep(1, req, res, result);
+          })
+          .catch((err) => {
+            logger.error(`${err} - sp`);
+            responsep(2, req, res, err);
+          });
+
+        break;
+
+      default:
+        break;
+    }
+  } catch (error) {
+    logger.error(`${error}, "Upload error"`);
+    responsep(2, req, res, error);
+  }
 };

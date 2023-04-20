@@ -28,9 +28,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
   storage: storage,
-  limits: {
-    fileSize: 629145600,
-  },
 });
 
 module.exports = (router) => {
@@ -133,6 +130,7 @@ module.exports = (router) => {
     decryptBody,
     routes.downloadScorm
   );
+  router.post("/a/delscorm", checkJwtToken, decryptBody, routes.delScorm);
 
   router.post(
     "/a/generatemctoken",
@@ -143,9 +141,15 @@ module.exports = (router) => {
 
   router.post("/a/checkmctoken", checkJwtToken, routes.checkmctoken);
 
+  router.post(
+    "/su/postuploadanscorm",
+    checkJwtToken,
+    upload.single("attachment"),
+    routes.postUploadANScorm
+  );
+
   // router.post("/prueba", decryptBody, routes.prueba);
 
-  router.post("/a/delscorm", checkJwtToken, decryptBody, routes.delScorm);
   //CRUD
   MapSpRouter("/sqlget", "spGetCentral");
   MapSpRouter("/sqlupdate", "spUpdateCentral");
@@ -165,6 +169,8 @@ module.exports = (router) => {
   MapSpRouter("/poc/getmeetings", "spQueryMeet");
   MapSpRouter("/getanalytics", "spQueryAnalitycs");
   MapSpRouter("/a/posttrackevents", "spInsertEventAgent");
+  MapSpRouter("/su/getnascorms", "spQuerySimulation");
+  MapSpRouter("/an/posttrackevents", "spInsertRegistrySimulation");
 
   function MapSpRouter(route, spName) {
     router.post(route, checkJwtToken, decryptBody, (req, res) =>
