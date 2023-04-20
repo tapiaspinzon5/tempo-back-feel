@@ -169,7 +169,7 @@ module.exports = (router) => {
   MapSpRouter("/poc/getmeetings", "spQueryMeet");
   MapSpRouter("/getanalytics", "spQueryAnalitycs");
   MapSpRouter("/a/posttrackevents", "spInsertEventAgent");
-  MapSpRouter("/su/getnascorms", "spQuerySimulation");
+  MapSpRouter("/su/getanscorms", "spQuerySimulation");
   MapSpRouter("/an/posttrackevents", "spInsertRegistrySimulation");
 
   function MapSpRouter(route, spName) {
