@@ -782,7 +782,7 @@ exports.getAgentAssignments = async (req, res) => {
 
             if (firstPartIp != 10) {
               const dataFiltered = result.Result.filter(
-                (c) => c.isPrivate !== true
+                (c) => c.IsPrivate !== true
               );
 
               if (dataFiltered.length === 0) {
@@ -802,7 +802,7 @@ exports.getAgentAssignments = async (req, res) => {
           case 2:
             if (firstPartIp != 10) {
               const dataFiltered = result.Result.filter(
-                (c) => c.isPrivate !== true
+                (c) => c.IsPrivate !== true
               );
 
               responsep(1, req, res, { Result: dataFiltered });
@@ -1136,7 +1136,7 @@ exports.postUploadANScorm = async (req, res) => {
 
           const files = await decompressFile(req.file.path);
           const file = files.filter((el) => el.includes(".htm"))[0];
-          const url = `http://localhost:4343/ainesting/${folderName}/${file}`;
+          const url = `https://${req.hostname}/ainesting/${folderName}/${file}`;
 
           sql
             .query(
@@ -1197,6 +1197,35 @@ exports.postUploadANScorm = async (req, res) => {
     }
   } catch (error) {
     logger.error(`${error}, "Upload error"`);
+    responsep(2, req, res, error);
+  }
+};
+
+exports.postTrackEvents = async (req, res) => {
+  const { requestedBy, simName } = req.body;
+
+  try {
+    sql
+      .query(
+        "spInsertRegistrySimulation",
+        parametros({ requestedBy, simName }, "spInsertRegistrySimulation")
+      )
+      .then(async (result) => {
+        res
+          .status(200)
+          .json(
+            CryptoJS.AES.encrypt(
+              JSON.stringify(result.Result[0]),
+              process.env.CRYPTOJS_AN_SECRET
+            ).toString()
+          );
+      })
+      .catch((err) => {
+        logger.error(`${err} - sp`);
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    logger.error(error);
     responsep(2, req, res, error);
   }
 };

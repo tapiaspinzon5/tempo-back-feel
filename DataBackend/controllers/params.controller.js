@@ -526,6 +526,7 @@ exports.parametros = (req, tipo) => {
         new SpParam("user", req.requestedBy, TYPES.VarChar),
         new SpParam("idEvent", req.idEvent, TYPES.Int),
         new SpParam("idActivity", req.idActivity, TYPES.Int),
+        new SpParam("idLp", req.idLp, TYPES.Int),
         new SpParam("dateOpen", req.dateOpen, TYPES.VarChar),
         new SpParam("timeToActivity", req.timeToActivity, TYPES.VarChar),
         new SpParam("typeConten", req.typeConten, TYPES.VarChar),
@@ -556,7 +557,7 @@ exports.parametros = (req, tipo) => {
     case "spInsertRegistrySimulation":
       return parametrizacion([
         new SpParam("user", req.requestedBy, TYPES.VarChar),
-        new SpParam("idSimulation", req.simId, TYPES.Int),
+        new SpParam("nameSimulation", req.simName, TYPES.VarChar),
       ]);
 
     default:

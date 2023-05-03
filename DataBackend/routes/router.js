@@ -2,9 +2,12 @@ const path = require("path");
 const multer = require("multer");
 const routes = require("../controllers/routes.controller");
 const { checkIdccms } = require("../middleware/checkIdccms");
-const { checkJwtToken } = require("../middleware/checkJwtToken");
+const {
+  checkJwtToken,
+  checkANJwtToken,
+} = require("../middleware/checkJwtToken");
 const { checkMsToken } = require("../middleware/checkMsToken");
-const { decryptBody } = require("../middleware/decrypt");
+const { decryptBody, decryptANBody } = require("../middleware/decrypt");
 const oauth = require("../middleware/oauth");
 const storage = multer.diskStorage({
   destination: "./uploads/",
@@ -148,6 +151,13 @@ module.exports = (router) => {
     routes.postUploadANScorm
   );
 
+  router.post(
+    "/an/posttrackevents",
+    checkANJwtToken,
+    decryptANBody,
+    routes.postTrackEvents
+  );
+
   // router.post("/prueba", decryptBody, routes.prueba);
 
   //CRUD
@@ -170,7 +180,6 @@ module.exports = (router) => {
   MapSpRouter("/getanalytics", "spQueryAnalitycs");
   MapSpRouter("/a/posttrackevents", "spInsertEventAgent");
   MapSpRouter("/su/getanscorms", "spQuerySimulation");
-  MapSpRouter("/an/posttrackevents", "spInsertRegistrySimulation");
 
   function MapSpRouter(route, spName) {
     router.post(route, checkJwtToken, decryptBody, (req, res) =>
