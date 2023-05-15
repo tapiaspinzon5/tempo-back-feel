@@ -120,6 +120,10 @@ let updateCampaignTable = [
 
 let insertSuperCourseTable = [
   {
+    name: "idActivity",
+    type: TYPES.Int,
+  },
+  {
     name: "nameActivity",
     type: TYPES.VarChar,
   },
@@ -261,6 +265,10 @@ let insertUpdateUserTable = [
   {
     name: "idCampaign",
     type: TYPES.Int,
+  },
+  {
+    name: "passwordEmployee",
+    type: TYPES.VarChar,
   },
   {
     name: "idRegistry",

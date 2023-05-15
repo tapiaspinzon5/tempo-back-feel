@@ -46,6 +46,7 @@ module.exports = (router) => {
 
   // METODOS PERSONALIZADOS
   router.post("/login", checkMsToken, routes.login);
+  router.post("/authlogin", decryptBody, routes.authLogin);
   // router.get("/auth/login/:app", routes.login);
 
   // Create campaign
@@ -146,7 +147,7 @@ module.exports = (router) => {
 
   router.post(
     "/su/postuploadanscorm",
-    checkJwtToken,
+    // checkJwtToken,
     upload.single("attachment"),
     routes.postUploadANScorm
   );

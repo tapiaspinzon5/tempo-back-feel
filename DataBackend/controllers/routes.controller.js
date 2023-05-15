@@ -6,6 +6,9 @@ const { randomInt } = require("crypto");
 const axios = require("axios");
 const decompress = require("decompress");
 const { v4: uuidv4 } = require("uuid");
+const requestIp = require("request-ip");
+// const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 const sql = require("./sql.controller");
 const parametros = require("./params.controller").parametros;
@@ -167,6 +170,82 @@ exports.login = async (req, res) => {
     });
 };
 
+exports.authLogin = async (req, res) => {
+  const { email, password } = req.body;
+
+  sql
+    .query(
+      "spQueryUsersDB",
+      parametros(
+        {
+          rows: [
+            [0, 0, "", "", email, "", "2023-01-01", "", "", 0, 0, 0, "", 1],
+          ],
+        },
+        "spQueryUsersDB"
+      )
+    )
+    .then((result) => {
+      if (result.length == 0) {
+        return res.status(401).json({ ok: false, msg: "No data in feel" });
+      }
+
+      if (password == result[0]["passwordEmployee"]) {
+        const token = generateToken(
+          {
+            email,
+          },
+          "9h"
+        );
+
+        sql
+          .query("spQueryRoleUser", parametros({ email }, "spQueryRoleUser"))
+          .then((result2) => {
+            if (result2.length == 0) {
+              return res
+                .status(401)
+                .json({ ok: false, msg: "No data in feel" });
+            }
+
+            let data = {
+              nombre: result[0]?.NameAgent,
+              email,
+              token,
+              refreshToken: token,
+              idccms: 0,
+              userName: "",
+              country: result2[0]?.country,
+              role: result2[0]?.role,
+              numberLogins: result2[0]?.numberLogins,
+              idCampaign: result2[0]?.idCampaign,
+              nameCampaign: result2[0]?.nameCampaign,
+              idLob: result2[0]?.idTeam,
+              nameLob: result2[0]?.nameTeam,
+              lastLogin: result2[0]?.lastLogin,
+              idWave: result2[0]?.idWave,
+              wave: result2[0]?.wave,
+            };
+
+            // res.json(data);
+            responsep(1, req, res, data);
+            // responsep(1, req, res, dataEncrypted);
+          })
+          .catch((err) => {
+            logger.error(`${err} - sp`);
+            responsep(2, req, res, err);
+          });
+      } else {
+        return res
+          .status(401)
+          .json({ ok: false, msg: "Wrong username/password" });
+      }
+    })
+    .catch((err) => {
+      logger.error(`${err} - sp`);
+      responsep(2, req, res, err);
+    });
+};
+
 exports.createCampaign = async (req, res) => {
   const { requestedBy, nameCampaign, lobsInfo } = req.body;
   let i = 0;
@@ -262,7 +341,7 @@ exports.postCreateCourse = async (req, res) => {
     let rows = activities.map(
       ({ nameActivity, descActivity, typeContent, urlActivity }) => {
         i = i + 1;
-        return [nameActivity, descActivity, typeContent, urlActivity, i, i];
+        return [0, nameActivity, descActivity, typeContent, urlActivity, i, i];
       }
     );
 
@@ -412,6 +491,10 @@ exports.updateUsers = async (req, res) => {
     // extraemos los valores de un objeto.
     const rows = [[...Object.values(user), 1]];
 
+    // TODO: Implementar el bcrypt
+    // if (context == 1 && rows[0][8] == "Viewer") {
+    //   rows[0][12] = bcrypt.hashSync(el[12], saltRounds);
+    // }
     // {
     //   "requestedBy": 4472074,
     //   "context": 1,
@@ -470,9 +553,23 @@ exports.postUpdateCourse = async (req, res) => {
 
   try {
     let rows = activities.map(
-      ({ nameActivity, descActivity, typeContent, urlActivity }) => {
+      ({
+        idActivity,
+        nameActivity,
+        descActivity,
+        typeContent,
+        urlActivity,
+      }) => {
         i = i + 1;
-        return [nameActivity, descActivity, typeContent, urlActivity, i, i];
+        return [
+          idActivity.toString().length > 12 ? 0 : idActivity,
+          nameActivity,
+          descActivity,
+          typeContent,
+          urlActivity,
+          i,
+          i,
+        ];
       }
     );
 
@@ -513,8 +610,21 @@ exports.insertUsers = async (req, res) => {
   let i = 0;
 
   try {
+    // TODO: Implementar el bcrypt
     let rows = usersInfo.map((el) => {
       i = i + 1;
+
+      if (el[8] == "Viewer") {
+        el[10] = 1;
+        // el[12] = bcrypt.hashSync(el[12], saltRounds);
+      }
+
+      if (el[8] == "TP Viewer") {
+        el[10] = 1;
+        el[11] = 1;
+        // el[12] = bcrypt.hashSync(el[12], saltRounds);
+      }
+
       return [...el, i];
     });
 
@@ -1064,30 +1174,30 @@ exports.postUploadANScorm = async (req, res) => {
 
   const { simName, simDesc, requestedBy, context, simId, simUrl } = req.body;
 
+  const folderName = uuidv4();
+
+  async function decompressFile(compressedFile) {
+    return decompress(compressedFile, "./scorms/ainesting/" + folderName)
+      .then(async (files) => {
+        logger.info(
+          `Archivo descomprimido en ${"./scorms/ainesting/" + folderName}`
+        );
+        delUpFile(req.file.path);
+        return await fs.promises.readdir(
+          `./scorms/ainesting/${folderName}/_files`
+        );
+      })
+      .catch((err) => {
+        logger.error("Error al descomprimir el archivo:", err);
+      });
+  }
+
   try {
     switch (context) {
       case "1":
-        const folderName = uuidv4();
-
-        async function decompressFile(compressedFile) {
-          return decompress(compressedFile, "./scorms/ainesting/" + folderName)
-            .then(async (files) => {
-              logger.info(
-                `Archivo descomprimido en ${"./scorms/ainesting/" + folderName}`
-              );
-              delUpFile(req.file.path);
-              return await fs.promises.readdir(
-                "./scorms/ainesting/" + folderName
-              );
-            })
-            .catch((err) => {
-              logger.error("Error al descomprimir el archivo:", err);
-            });
-        }
-
         const files = await decompressFile(req.file.path);
         const file = files.filter((el) => el.includes(".htm"))[0];
-        const url = `http://localhost:4343/ainesting/${folderName}/${file}`;
+        const url = `https://${req.hostname}/ainesting/${folderName}/_files/${file}#FS=1`;
 
         sql
           .query(
@@ -1106,37 +1216,12 @@ exports.postUploadANScorm = async (req, res) => {
           });
 
         break;
+
       case "2":
         if (req.file) {
-          const folderName = uuidv4();
-
-          async function decompressFile(compressedFile) {
-            return decompress(
-              compressedFile,
-              "./scorms/ainesting/" + folderName
-            )
-              .then(async (files) => {
-                logger.info(
-                  `Archivo descomprimido en ${
-                    "./scorms/ainesting/" + folderName
-                  }`
-                );
-                delUpFile(req.file.path);
-                delUpFile(
-                  `./scorms/ainesting/${simUrl.split("/").reverse()[1]}`
-                );
-                return await fs.promises.readdir(
-                  "./scorms/ainesting/" + folderName
-                );
-              })
-              .catch((err) => {
-                logger.error("Error al descomprimir el archivo:", err);
-              });
-          }
-
           const files = await decompressFile(req.file.path);
           const file = files.filter((el) => el.includes(".htm"))[0];
-          const url = `https://${req.hostname}/ainesting/${folderName}/${file}`;
+          const url = `https://${req.hostname}/ainesting/${folderName}/_files/${file}#FS=1`;
 
           sql
             .query(
@@ -1147,6 +1232,7 @@ exports.postUploadANScorm = async (req, res) => {
               )
             )
             .then(async (result) => {
+              delUpFile(`./scorms/ainesting/${simUrl.split("/").reverse()[2]}`);
               responsep(1, req, res, result);
             })
             .catch((err) => {
@@ -1182,7 +1268,7 @@ exports.postUploadANScorm = async (req, res) => {
             )
           )
           .then(async (result) => {
-            delUpFile(`./scorms/ainesting/${simUrl.split("/").reverse()[1]}`);
+            delUpFile(`./scorms/ainesting/${simUrl.split("/").reverse()[2]}`);
             responsep(1, req, res, result);
           })
           .catch((err) => {
