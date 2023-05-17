@@ -147,7 +147,7 @@ module.exports = (router) => {
 
   router.post(
     "/su/postuploadanscorm",
-    // checkJwtToken,
+    checkJwtToken,
     upload.single("attachment"),
     routes.postUploadANScorm
   );

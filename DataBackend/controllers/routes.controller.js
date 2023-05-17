@@ -7,7 +7,7 @@ const axios = require("axios");
 const decompress = require("decompress");
 const { v4: uuidv4 } = require("uuid");
 const requestIp = require("request-ip");
-// const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 const sql = require("./sql.controller");
@@ -78,6 +78,16 @@ let responsep = (tipo, req, res, resultado, cookie) => {
       // res.status(400).json(resultado);
       res
         .status(400)
+        .json(
+          CryptoJS.AES.encrypt(
+            JSON.stringify(resultado),
+            process.env.CRYPTOJS_SECRET
+          ).toString()
+        );
+    } else if (tipo == 3) {
+      logger.error(resultado);
+      res
+        .status(401)
         .json(
           CryptoJS.AES.encrypt(
             JSON.stringify(resultado),
@@ -190,7 +200,7 @@ exports.authLogin = async (req, res) => {
         return res.status(401).json({ ok: false, msg: "No data in feel" });
       }
 
-      if (password == result[0]["passwordEmployee"]) {
+      if (bcrypt.compareSync(password, result[0]["passwordEmployee"])) {
         const token = generateToken(
           {
             email,
@@ -235,9 +245,7 @@ exports.authLogin = async (req, res) => {
             responsep(2, req, res, err);
           });
       } else {
-        return res
-          .status(401)
-          .json({ ok: false, msg: "Wrong username/password" });
+        responsep(3, req, res, { ok: false, msg: "Wrong username/password" });
       }
     })
     .catch((err) => {
@@ -486,15 +494,20 @@ exports.getcourses = async (req, res) => {
 
 exports.updateUsers = async (req, res) => {
   const { requestedBy, context, user } = req.body;
+  const roles = ["Agent", "TP Viewer", "Poc", "Super Admin"];
 
   try {
     // extraemos los valores de un objeto.
     const rows = [[...Object.values(user), 1]];
 
-    // TODO: Implementar el bcrypt
-    // if (context == 1 && rows[0][8] == "Viewer") {
-    //   rows[0][12] = bcrypt.hashSync(el[12], saltRounds);
-    // }
+    if (context == 1 && rows[0][8] == "Viewer") {
+      rows[0][12] = bcrypt.hashSync(rows[0][12], saltRounds);
+    }
+
+    if (roles.includes(rows[0][8])) {
+      rows[0][12] = null;
+    }
+
     // {
     //   "requestedBy": 4472074,
     //   "context": 1,
@@ -510,7 +523,14 @@ exports.updateUsers = async (req, res) => {
 
       case 1:
         if (activeUsers[0].idEmployee !== user.idEmployee) {
-          return responsep(2, req, res, activeUsers);
+          return res
+            .status(409)
+            .json(
+              CryptoJS.AES.encrypt(
+                JSON.stringify(activeUsers),
+                process.env.CRYPTOJS_SECRET
+              ).toString()
+            );
         }
         break;
 
@@ -607,22 +627,26 @@ exports.postUpdateCourse = async (req, res) => {
 
 exports.insertUsers = async (req, res) => {
   const { requestedBy, usersInfo } = req.body;
+  const roles = ["Agent", "Poc", "Super Admin"];
   let i = 0;
 
   try {
-    // TODO: Implementar el bcrypt
     let rows = usersInfo.map((el) => {
       i = i + 1;
 
       if (el[8] == "Viewer") {
-        el[10] = 1;
-        // el[12] = bcrypt.hashSync(el[12], saltRounds);
+        //   el[10] = 1;
+        el[12] = bcrypt.hashSync(el[12], saltRounds);
       }
 
       if (el[8] == "TP Viewer") {
         el[10] = 1;
         el[11] = 1;
-        // el[12] = bcrypt.hashSync(el[12], saltRounds);
+        el[12] = null;
+      }
+
+      if (roles.includes(el[8])) {
+        el[12] = null;
       }
 
       return [...el, i];
@@ -630,7 +654,19 @@ exports.insertUsers = async (req, res) => {
 
     // Validamos que no existan los correos que ingresaron
     let activeUsers = await checkEmails(rows);
-    if (activeUsers.length > 0) return responsep(2, req, res, activeUsers);
+    if (activeUsers.length > 0) {
+      activeUsers.forEach((object) => {
+        delete object["passwordEmployee"];
+      });
+      return res
+        .status(409)
+        .json(
+          CryptoJS.AES.encrypt(
+            JSON.stringify(activeUsers),
+            process.env.CRYPTOJS_SECRET
+          ).toString()
+        );
+    }
 
     sql
       .query("spInsertUser", parametros({ requestedBy, rows }, "spInsertUser"))
