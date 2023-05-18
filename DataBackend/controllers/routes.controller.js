@@ -501,7 +501,10 @@ exports.updateUsers = async (req, res) => {
     const rows = [[...Object.values(user), 1]];
 
     if (context == 1 && rows[0][8] == "Viewer") {
-      rows[0][12] = bcrypt.hashSync(rows[0][12], saltRounds);
+      rows[0][12] =
+        rows[0][12].length > 15
+          ? rows[0][12]
+          : bcrypt.hashSync(rows[0][12], saltRounds);
     }
 
     if (roles.includes(rows[0][8])) {
