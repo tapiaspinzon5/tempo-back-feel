@@ -159,6 +159,13 @@ module.exports = (router) => {
     routes.postTrackEvents
   );
 
+  router.post(
+    "/tpv/getcampaigncontent",
+    checkJwtToken,
+    decryptBody,
+    routes.getCampaignContent
+  );
+
   // router.post("/prueba", decryptBody, routes.prueba);
 
   //CRUD

@@ -568,6 +568,15 @@ exports.parametros = (req, tipo) => {
         new SpParam("nameSimulation", req.simName, TYPES.VarChar),
       ]);
 
+    case "spQueryContent":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("context", req.context, TYPES.Int),
+        new SpParam("idCampaign", req.idCampaign, TYPES.Int),
+        new SpParam("idLob", req.idLob, TYPES.Int),
+        new SpParam("idWave", req.idWave, TYPES.Int),
+      ]);
+
     default:
       return null;
   }

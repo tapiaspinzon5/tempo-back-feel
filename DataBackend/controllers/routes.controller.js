@@ -1354,3 +1354,41 @@ exports.postTrackEvents = async (req, res) => {
     responsep(2, req, res, error);
   }
 };
+
+exports.getCampaignContent = async (req, res) => {
+  const { context, idCampaign, idLob, idWave, requestedBy } = req.body;
+
+  try {
+    sql
+      .query(
+        "spQueryContent",
+        parametros(
+          { context, idCampaign, idLob, idWave, requestedBy },
+          "spQueryContent"
+        )
+      )
+      .then(async (result) => {
+        switch (context) {
+          case 1:
+            const groupedData = orderAssign(result);
+            res.json(groupedData);
+            break;
+          case 2:
+            res.json(result);
+            break;
+          case 3:
+            res.json(result);
+            break;
+          default:
+            break;
+        }
+      })
+      .catch((err) => {
+        logger.error(`${err} - sp`);
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    logger.error(error);
+    responsep(2, req, res, error);
+  }
+};
