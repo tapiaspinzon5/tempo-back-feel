@@ -1375,7 +1375,9 @@ exports.getCampaignContent = async (req, res) => {
             responsep(1, req, res, { Result: groupedData });
             break;
           case 2:
-            res.json(result);
+            // res.json(result);
+            responsep(1, req, res, { Result: result });
+
             break;
           case 3:
             res.json(result);
