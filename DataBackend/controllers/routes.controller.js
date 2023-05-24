@@ -1371,7 +1371,8 @@ exports.getCampaignContent = async (req, res) => {
         switch (context) {
           case 1:
             const groupedData = orderAssign(result);
-            res.json(groupedData);
+            // res.json(groupedData);
+            responsep(1, req, res, { Result: groupedData });
             break;
           case 2:
             res.json(result);

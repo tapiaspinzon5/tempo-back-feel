@@ -476,6 +476,8 @@ exports.parametros = (req, tipo) => {
     case "spQueryWaves":
       return parametrizacion([
         new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("context", req.context, TYPES.Int),
+        new SpParam("idLob", req.idLob, TYPES.Int),
       ]);
 
     case "spQueryLpWave":
