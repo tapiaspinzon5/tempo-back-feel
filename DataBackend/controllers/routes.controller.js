@@ -1098,7 +1098,8 @@ const delUpFile = async (filePath) => {
 };
 
 exports.downloadScorm = async (req, res) => {
-  const { requestedBy, folderName, url } = req.body;
+  let { requestedBy, folderName, url } = req.body;
+  folderName = folderName == "" ? `${Date.now()}-viewer` : folderName;
 
   try {
     // Descarga de scorm
@@ -1166,14 +1167,15 @@ exports.delScorm = async (req, res) => {
   const { folderName } = req.body;
 
   try {
-    fs.rm(
-      path.join(__dirname, `../scorms/${folderName}`),
-      { recursive: true, force: true },
-      (error) => {
-        if (error) throw new Error(error);
-      }
-    );
-
+    if (folderName != "") {
+      fs.rm(
+        path.join(__dirname, `../scorms/${folderName}`),
+        { recursive: true, force: true },
+        (error) => {
+          if (error) throw new Error(error);
+        }
+      );
+    }
     responsep(1, req, res, { status: "ok" });
   } catch (error) {
     logger.error(`${error}, "delScorm"`);
