@@ -144,6 +144,10 @@ let insertSuperCourseTable = [
     type: TYPES.Int,
   },
   {
+    name: "timeActivity",
+    type: TYPES.Int,
+  },
+  {
     name: "idRegistry",
     type: TYPES.Int,
   },

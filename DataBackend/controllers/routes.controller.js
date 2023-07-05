@@ -347,9 +347,24 @@ exports.postCreateCourse = async (req, res) => {
 
   try {
     let rows = activities.map(
-      ({ nameActivity, descActivity, typeContent, urlActivity }) => {
+      ({
+        nameActivity,
+        descActivity,
+        typeContent,
+        urlActivity,
+        timeActivity,
+      }) => {
         i = i + 1;
-        return [0, nameActivity, descActivity, typeContent, urlActivity, i, i];
+        return [
+          0,
+          nameActivity,
+          descActivity,
+          typeContent,
+          urlActivity,
+          i,
+          timeActivity,
+          i,
+        ];
       }
     );
 
@@ -428,6 +443,7 @@ exports.getcourses = async (req, res) => {
               progressActivity: e?.progressActivity,
               progressLastActtivity: e?.progressLastActtivity,
               views: e?.views,
+              timeActivity: e?.timeActivity,
             });
           }
 
@@ -455,6 +471,7 @@ exports.getcourses = async (req, res) => {
                   progressActivity: e?.progressActivity,
                   progressLastActtivity: e?.progressLastActtivity,
                   views: e?.views,
+                  timeActivity: e?.timeActivity,
                 },
               ],
             };
@@ -582,6 +599,7 @@ exports.postUpdateCourse = async (req, res) => {
         descActivity,
         typeContent,
         urlActivity,
+        timeActivity,
       }) => {
         i = i + 1;
         return [
@@ -591,6 +609,7 @@ exports.postUpdateCourse = async (req, res) => {
           typeContent,
           urlActivity,
           i,
+          timeActivity,
           i,
         ];
       }
