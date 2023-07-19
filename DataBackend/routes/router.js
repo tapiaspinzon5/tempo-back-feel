@@ -2,9 +2,12 @@ const path = require("path");
 const multer = require("multer");
 const routes = require("../controllers/routes.controller");
 const { checkIdccms } = require("../middleware/checkIdccms");
-const { checkJwtToken } = require("../middleware/checkJwtToken");
+const {
+  checkJwtToken,
+  checkANJwtToken,
+} = require("../middleware/checkJwtToken");
 const { checkMsToken } = require("../middleware/checkMsToken");
-const { decryptBody } = require("../middleware/decrypt");
+const { decryptBody, decryptANBody } = require("../middleware/decrypt");
 const oauth = require("../middleware/oauth");
 const storage = multer.diskStorage({
   destination: "./uploads/",
@@ -28,9 +31,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
   storage: storage,
-  limits: {
-    fileSize: 629145600,
-  },
 });
 
 module.exports = (router) => {
@@ -46,6 +46,7 @@ module.exports = (router) => {
 
   // METODOS PERSONALIZADOS
   router.post("/login", checkMsToken, routes.login);
+  router.post("/authlogin", decryptBody, routes.authLogin);
   // router.get("/auth/login/:app", routes.login);
 
   // Create campaign
@@ -133,6 +134,7 @@ module.exports = (router) => {
     decryptBody,
     routes.downloadScorm
   );
+  router.post("/a/delscorm", checkJwtToken, decryptBody, routes.delScorm);
 
   router.post(
     "/a/generatemctoken",
@@ -143,9 +145,29 @@ module.exports = (router) => {
 
   router.post("/a/checkmctoken", checkJwtToken, routes.checkmctoken);
 
+  router.post(
+    "/su/postuploadanscorm",
+    checkJwtToken,
+    upload.single("attachment"),
+    routes.postUploadANScorm
+  );
+
+  router.post(
+    "/an/posttrackevents",
+    checkANJwtToken,
+    decryptANBody,
+    routes.postTrackEvents
+  );
+
+  router.post(
+    "/tpv/getcampaigncontent",
+    checkJwtToken,
+    decryptBody,
+    routes.getCampaignContent
+  );
+
   // router.post("/prueba", decryptBody, routes.prueba);
 
-  router.post("/a/delscorm", checkJwtToken, decryptBody, routes.delScorm);
   //CRUD
   MapSpRouter("/sqlget", "spGetCentral");
   MapSpRouter("/sqlupdate", "spUpdateCentral");
@@ -165,6 +187,7 @@ module.exports = (router) => {
   MapSpRouter("/poc/getmeetings", "spQueryMeet");
   MapSpRouter("/getanalytics", "spQueryAnalitycs");
   MapSpRouter("/a/posttrackevents", "spInsertEventAgent");
+  MapSpRouter("/su/getanscorms", "spQuerySimulation");
 
   function MapSpRouter(route, spName) {
     router.post(route, checkJwtToken, decryptBody, (req, res) =>

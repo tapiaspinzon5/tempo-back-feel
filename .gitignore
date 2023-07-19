@@ -10,5 +10,6 @@ DataBackend/.vscode
 DataBackend/web_bk.config
 DataBackend/firebase/firebase.json
 DataBackend/scorms
+DataBackend/uploads
 
 .vscode

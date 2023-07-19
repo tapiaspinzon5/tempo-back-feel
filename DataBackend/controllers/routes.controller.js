@@ -5,6 +5,10 @@ const CryptoJS = require("crypto-js");
 const { randomInt } = require("crypto");
 const axios = require("axios");
 const decompress = require("decompress");
+const { v4: uuidv4 } = require("uuid");
+const requestIp = require("request-ip");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 const sql = require("./sql.controller");
 const parametros = require("./params.controller").parametros;
@@ -74,6 +78,16 @@ let responsep = (tipo, req, res, resultado, cookie) => {
       // res.status(400).json(resultado);
       res
         .status(400)
+        .json(
+          CryptoJS.AES.encrypt(
+            JSON.stringify(resultado),
+            process.env.CRYPTOJS_SECRET
+          ).toString()
+        );
+    } else if (tipo == 3) {
+      logger.error(resultado);
+      res
+        .status(401)
         .json(
           CryptoJS.AES.encrypt(
             JSON.stringify(resultado),
@@ -159,6 +173,80 @@ exports.login = async (req, res) => {
       // ).toString();
       responsep(1, req, res, data);
       // responsep(1, req, res, dataEncrypted);
+    })
+    .catch((err) => {
+      logger.error(`${err} - sp`);
+      responsep(2, req, res, err);
+    });
+};
+
+exports.authLogin = async (req, res) => {
+  const { email, password } = req.body;
+
+  sql
+    .query(
+      "spQueryUsersDB",
+      parametros(
+        {
+          rows: [
+            [0, 0, "", "", email, "", "2023-01-01", "", "", 0, 0, 0, "", 1],
+          ],
+        },
+        "spQueryUsersDB"
+      )
+    )
+    .then((result) => {
+      if (result.length == 0) {
+        return res.status(401).json({ ok: false, msg: "No data in feel" });
+      }
+
+      if (bcrypt.compareSync(password, result[0]["passwordEmployee"])) {
+        const token = generateToken(
+          {
+            email,
+          },
+          "9h"
+        );
+
+        sql
+          .query("spQueryRoleUser", parametros({ email }, "spQueryRoleUser"))
+          .then((result2) => {
+            if (result2.length == 0) {
+              return res
+                .status(401)
+                .json({ ok: false, msg: "No data in feel" });
+            }
+
+            let data = {
+              nombre: result[0]?.NameAgent,
+              email,
+              token,
+              refreshToken: token,
+              idccms: 0,
+              userName: "",
+              country: result2[0]?.country,
+              role: result2[0]?.role,
+              numberLogins: result2[0]?.numberLogins,
+              idCampaign: result2[0]?.idCampaign,
+              nameCampaign: result2[0]?.nameCampaign,
+              idLob: result2[0]?.idTeam,
+              nameLob: result2[0]?.nameTeam,
+              lastLogin: result2[0]?.lastLogin,
+              idWave: result2[0]?.idWave,
+              wave: result2[0]?.wave,
+            };
+
+            // res.json(data);
+            responsep(1, req, res, data);
+            // responsep(1, req, res, dataEncrypted);
+          })
+          .catch((err) => {
+            logger.error(`${err} - sp`);
+            responsep(2, req, res, err);
+          });
+      } else {
+        responsep(3, req, res, { ok: false, msg: "Wrong username/password" });
+      }
     })
     .catch((err) => {
       logger.error(`${err} - sp`);
@@ -259,9 +347,24 @@ exports.postCreateCourse = async (req, res) => {
 
   try {
     let rows = activities.map(
-      ({ nameActivity, descActivity, typeContent, urlActivity }) => {
+      ({
+        nameActivity,
+        descActivity,
+        typeContent,
+        urlActivity,
+        timeActivity,
+      }) => {
         i = i + 1;
-        return [nameActivity, descActivity, typeContent, urlActivity, i, i];
+        return [
+          0,
+          nameActivity,
+          descActivity,
+          typeContent,
+          urlActivity,
+          i,
+          timeActivity,
+          i,
+        ];
       }
     );
 
@@ -340,6 +443,7 @@ exports.getcourses = async (req, res) => {
               progressActivity: e?.progressActivity,
               progressLastActtivity: e?.progressLastActtivity,
               views: e?.views,
+              timeActivity: e?.timeActivity,
             });
           }
 
@@ -367,6 +471,7 @@ exports.getcourses = async (req, res) => {
                   progressActivity: e?.progressActivity,
                   progressLastActtivity: e?.progressLastActtivity,
                   views: e?.views,
+                  timeActivity: e?.timeActivity,
                 },
               ],
             };
@@ -406,10 +511,22 @@ exports.getcourses = async (req, res) => {
 
 exports.updateUsers = async (req, res) => {
   const { requestedBy, context, user } = req.body;
+  const roles = ["Agent", "TP Viewer", "Poc", "Super Admin"];
 
   try {
     // extraemos los valores de un objeto.
     const rows = [[...Object.values(user), 1]];
+
+    if (context == 1 && rows[0][8] == "Viewer") {
+      rows[0][12] =
+        rows[0][12].length > 15
+          ? rows[0][12]
+          : bcrypt.hashSync(rows[0][12], saltRounds);
+    }
+
+    if (roles.includes(rows[0][8])) {
+      rows[0][12] = null;
+    }
 
     // {
     //   "requestedBy": 4472074,
@@ -426,7 +543,14 @@ exports.updateUsers = async (req, res) => {
 
       case 1:
         if (activeUsers[0].idEmployee !== user.idEmployee) {
-          return responsep(2, req, res, activeUsers);
+          return res
+            .status(409)
+            .json(
+              CryptoJS.AES.encrypt(
+                JSON.stringify(activeUsers),
+                process.env.CRYPTOJS_SECRET
+              ).toString()
+            );
         }
         break;
 
@@ -469,9 +593,25 @@ exports.postUpdateCourse = async (req, res) => {
 
   try {
     let rows = activities.map(
-      ({ nameActivity, descActivity, typeContent, urlActivity }) => {
+      ({
+        idActivity,
+        nameActivity,
+        descActivity,
+        typeContent,
+        urlActivity,
+        timeActivity,
+      }) => {
         i = i + 1;
-        return [nameActivity, descActivity, typeContent, urlActivity, i, i];
+        return [
+          idActivity.toString().length > 12 ? 0 : idActivity,
+          nameActivity,
+          descActivity,
+          typeContent,
+          urlActivity,
+          i,
+          timeActivity,
+          i,
+        ];
       }
     );
 
@@ -509,17 +649,46 @@ exports.postUpdateCourse = async (req, res) => {
 
 exports.insertUsers = async (req, res) => {
   const { requestedBy, usersInfo } = req.body;
+  const roles = ["Agent", "Poc", "Super Admin"];
   let i = 0;
 
   try {
     let rows = usersInfo.map((el) => {
       i = i + 1;
+
+      if (el[8] == "Viewer") {
+        //   el[10] = 1;
+        el[12] = bcrypt.hashSync(el[12], saltRounds);
+      }
+
+      if (el[8] == "TP Viewer") {
+        el[10] = 1;
+        el[11] = 1;
+        el[12] = null;
+      }
+
+      if (roles.includes(el[8])) {
+        el[12] = null;
+      }
+
       return [...el, i];
     });
 
     // Validamos que no existan los correos que ingresaron
     let activeUsers = await checkEmails(rows);
-    if (activeUsers.length > 0) return responsep(2, req, res, activeUsers);
+    if (activeUsers.length > 0) {
+      activeUsers.forEach((object) => {
+        delete object["passwordEmployee"];
+      });
+      return res
+        .status(409)
+        .json(
+          CryptoJS.AES.encrypt(
+            JSON.stringify(activeUsers),
+            process.env.CRYPTOJS_SECRET
+          ).toString()
+        );
+    }
 
     sql
       .query("spInsertUser", parametros({ requestedBy, rows }, "spInsertUser"))
@@ -781,7 +950,7 @@ exports.getAgentAssignments = async (req, res) => {
 
             if (firstPartIp != 10) {
               const dataFiltered = result.Result.filter(
-                (c) => c.isPrivate !== true
+                (c) => c.IsPrivate !== true
               );
 
               if (dataFiltered.length === 0) {
@@ -801,7 +970,7 @@ exports.getAgentAssignments = async (req, res) => {
           case 2:
             if (firstPartIp != 10) {
               const dataFiltered = result.Result.filter(
-                (c) => c.isPrivate !== true
+                (c) => c.IsPrivate !== true
               );
 
               responsep(1, req, res, { Result: dataFiltered });
@@ -948,7 +1117,8 @@ const delUpFile = async (filePath) => {
 };
 
 exports.downloadScorm = async (req, res) => {
-  const { requestedBy, folderName, url } = req.body;
+  let { requestedBy, folderName, url } = req.body;
+  folderName = folderName == "" ? `${Date.now()}-viewer` : folderName;
 
   try {
     // Descarga de scorm
@@ -1016,14 +1186,15 @@ exports.delScorm = async (req, res) => {
   const { folderName } = req.body;
 
   try {
-    fs.rm(
-      path.join(__dirname, `../scorms/${folderName}`),
-      { recursive: true, force: true },
-      (error) => {
-        if (error) throw new Error(error);
-      }
-    );
-
+    if (folderName != "") {
+      fs.rm(
+        path.join(__dirname, `../scorms/${folderName}`),
+        { recursive: true, force: true },
+        (error) => {
+          if (error) throw new Error(error);
+        }
+      );
+    }
     responsep(1, req, res, { status: "ok" });
   } catch (error) {
     logger.error(`${error}, "delScorm"`);
@@ -1047,4 +1218,201 @@ exports.generatemcToken = async (req, res) => {
 
 exports.checkmctoken = async (req, res) => {
   return res.status(200).json({ ok: true, message: "valid token" });
+};
+
+exports.postUploadANScorm = async (req, res) => {
+  // {
+  //   fieldname: 'attachment',
+  //   originalname: 'scorm_1676410520956.jpg',
+  //   encoding: '7bit',
+  //   mimetype: 'image/jpeg',
+  //   destination: './uploads/',
+  //   filename: '1676471136919-scorm_1676410520956.jpg',
+  //   path: 'uploads\\1676471136919-scorm_1676410520956.jpg',
+  //   size: 4228
+  // }
+
+  const { simName, simDesc, requestedBy, context, simId, simUrl } = req.body;
+
+  const folderName = uuidv4();
+
+  async function decompressFile(compressedFile) {
+    return decompress(compressedFile, "./scorms/ainesting/" + folderName)
+      .then(async (files) => {
+        logger.info(
+          `Archivo descomprimido en ${"./scorms/ainesting/" + folderName}`
+        );
+        delUpFile(req.file.path);
+        return await fs.promises.readdir(
+          `./scorms/ainesting/${folderName}/_files`
+        );
+      })
+      .catch((err) => {
+        logger.error("Error al descomprimir el archivo:", err);
+      });
+  }
+
+  try {
+    switch (context) {
+      case "1":
+        const files = await decompressFile(req.file.path);
+        const file = files.filter((el) => el.includes(".htm"))[0];
+        const url = `https://${req.hostname}/ainesting/${folderName}/_files/${file}#FS=1`;
+
+        sql
+          .query(
+            "spSimulation",
+            parametros(
+              { simName, simDesc, url, requestedBy, simId, context },
+              "spSimulation"
+            )
+          )
+          .then(async (result) => {
+            responsep(1, req, res, result);
+          })
+          .catch((err) => {
+            logger.error(`${err} - sp`);
+            responsep(2, req, res, err);
+          });
+
+        break;
+
+      case "2":
+        if (req.file) {
+          const files = await decompressFile(req.file.path);
+          const file = files.filter((el) => el.includes(".htm"))[0];
+          const url = `https://${req.hostname}/ainesting/${folderName}/_files/${file}#FS=1`;
+
+          sql
+            .query(
+              "spSimulation",
+              parametros(
+                { simName, simDesc, url, requestedBy, simId, context },
+                "spSimulation"
+              )
+            )
+            .then(async (result) => {
+              delUpFile(`./scorms/ainesting/${simUrl.split("/").reverse()[2]}`);
+              responsep(1, req, res, result);
+            })
+            .catch((err) => {
+              logger.error(`${err} - sp`);
+              responsep(2, req, res, err);
+            });
+        } else {
+          sql
+            .query(
+              "spSimulation",
+              parametros(
+                { simName, simDesc, url: simUrl, requestedBy, simId, context },
+                "spSimulation"
+              )
+            )
+            .then(async (result) => {
+              responsep(1, req, res, result);
+            })
+            .catch((err) => {
+              logger.error(`${err} - sp`);
+              responsep(2, req, res, err);
+            });
+        }
+
+        break;
+      case "3":
+        sql
+          .query(
+            "spSimulation",
+            parametros(
+              { simName, simDesc, url: simUrl, requestedBy, simId, context },
+              "spSimulation"
+            )
+          )
+          .then(async (result) => {
+            delUpFile(`./scorms/ainesting/${simUrl.split("/").reverse()[2]}`);
+            responsep(1, req, res, result);
+          })
+          .catch((err) => {
+            logger.error(`${err} - sp`);
+            responsep(2, req, res, err);
+          });
+
+        break;
+
+      default:
+        break;
+    }
+  } catch (error) {
+    logger.error(`${error}, "Upload error"`);
+    responsep(2, req, res, error);
+  }
+};
+
+exports.postTrackEvents = async (req, res) => {
+  const { requestedBy, simName } = req.body;
+
+  try {
+    sql
+      .query(
+        "spInsertRegistrySimulation",
+        parametros({ requestedBy, simName }, "spInsertRegistrySimulation")
+      )
+      .then(async (result) => {
+        res
+          .status(200)
+          .json(
+            CryptoJS.AES.encrypt(
+              JSON.stringify(result.Result[0]),
+              process.env.CRYPTOJS_AN_SECRET
+            ).toString()
+          );
+      })
+      .catch((err) => {
+        logger.error(`${err} - sp`);
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    logger.error(error);
+    responsep(2, req, res, error);
+  }
+};
+
+exports.getCampaignContent = async (req, res) => {
+  const { context, idCampaign, idLob, idWave, requestedBy } = req.body;
+
+  try {
+    sql
+      .query(
+        "spQueryContent",
+        parametros(
+          { context, idCampaign, idLob, idWave, requestedBy },
+          "spQueryContent"
+        )
+      )
+      .then(async (result) => {
+        switch (context) {
+          case 1:
+            const groupedData = orderAssign(result);
+            // res.json(groupedData);
+            responsep(1, req, res, { Result: groupedData });
+            break;
+          case 2:
+            // res.json(result);
+            responsep(1, req, res, { Result: result });
+
+            break;
+          case 3:
+            res.json(result);
+            break;
+          default:
+            break;
+        }
+      })
+      .catch((err) => {
+        logger.error(`${err} - sp`);
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    logger.error(error);
+    responsep(2, req, res, error);
+  }
 };

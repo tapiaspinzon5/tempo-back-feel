@@ -30,9 +30,15 @@ const logger = require("./utils/logger");
 const corsOptions = {
   origin: [
     "http://localhost:3000",
+    "http://localhost:5173",
     "https://feelsdev.teleperformance.co",
     "https://tpfeeltest.teleperformance.co",
     "https://feeldev.teleperformance.co",
+    "https://feel.teleperformance.co",
+    "https://gamificationtest.teleperformance.co",
+    "http://localhost:4200",
+    "https://nesting-test.teleperformance.co:4201",
+    "https://nestingclient.teleperformance.co",
   ],
   credentials: true,
 };

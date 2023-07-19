@@ -120,6 +120,10 @@ let updateCampaignTable = [
 
 let insertSuperCourseTable = [
   {
+    name: "idActivity",
+    type: TYPES.Int,
+  },
+  {
     name: "nameActivity",
     type: TYPES.VarChar,
   },
@@ -137,6 +141,10 @@ let insertSuperCourseTable = [
   },
   {
     name: "orderActivity",
+    type: TYPES.Int,
+  },
+  {
+    name: "timeActivity",
     type: TYPES.Int,
   },
   {
@@ -261,6 +269,10 @@ let insertUpdateUserTable = [
   {
     name: "idCampaign",
     type: TYPES.Int,
+  },
+  {
+    name: "passwordEmployee",
+    type: TYPES.VarChar,
   },
   {
     name: "idRegistry",
@@ -468,6 +480,8 @@ exports.parametros = (req, tipo) => {
     case "spQueryWaves":
       return parametrizacion([
         new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("context", req.context, TYPES.Int),
+        new SpParam("idLob", req.idLob, TYPES.Int),
       ]);
 
     case "spQueryLpWave":
@@ -526,6 +540,7 @@ exports.parametros = (req, tipo) => {
         new SpParam("user", req.requestedBy, TYPES.VarChar),
         new SpParam("idEvent", req.idEvent, TYPES.Int),
         new SpParam("idActivity", req.idActivity, TYPES.Int),
+        new SpParam("idLp", req.idLp, TYPES.Int),
         new SpParam("dateOpen", req.dateOpen, TYPES.VarChar),
         new SpParam("timeToActivity", req.timeToActivity, TYPES.VarChar),
         new SpParam("typeConten", req.typeConten, TYPES.VarChar),
@@ -534,6 +549,38 @@ exports.parametros = (req, tipo) => {
         new SpParam("timeView", req.timeView, TYPES.VarChar),
         new SpParam("views", req.views, TYPES.Int),
         new SpParam("context", req.context, TYPES.Int),
+      ]);
+
+    case "spSimulation":
+      return parametrizacion([
+        new SpParam("nameSimulation", req.simName, TYPES.VarChar),
+        new SpParam("descSimulation", req.simDesc, TYPES.VarChar),
+        new SpParam("urlSimulation", req.url, TYPES.VarChar),
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("idSimulation", req.simId, TYPES.Int),
+        new SpParam("context", req.context, TYPES.Int),
+      ]);
+
+    case "spQuerySimulation":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("idSimulation", req.simId, TYPES.Int),
+        new SpParam("context", req.context, TYPES.Int),
+      ]);
+
+    case "spInsertRegistrySimulation":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("nameSimulation", req.simName, TYPES.VarChar),
+      ]);
+
+    case "spQueryContent":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("context", req.context, TYPES.Int),
+        new SpParam("idCampaign", req.idCampaign, TYPES.Int),
+        new SpParam("idLob", req.idLob, TYPES.Int),
+        new SpParam("idWave", req.idWave, TYPES.Int),
       ]);
 
     default:

@@ -9,7 +9,7 @@ exports.orderAssign = (result) => {
       rows[e.idLp].courses.push({
         idCourse: e.idCourse,
         nameCourse: e.nameCourse,
-        isPrivate: e.isPrivate,
+        IsPrivate: e.IsPrivate,
         urlImgCourse: e.urlImgCourse,
         orderCourse: e.orderCourse,
         statusCourse: e.StatusCourse,
@@ -36,7 +36,7 @@ exports.orderAssign = (result) => {
           {
             idCourse: e.idCourse,
             nameCourse: e.nameCourse,
-            isPrivate: e.isPrivate,
+            IsPrivate: e.IsPrivate,
             urlImgCourse: e.urlImgCourse,
             orderCourse: e.orderCourse,
             statusCourse: e.StatusCourse,

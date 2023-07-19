@@ -12,14 +12,14 @@ if (process.env.ENV == "Production" || process.env.ENV == "Development") {
       },
       driver: process.env.DRIVER,
       options: {
-        instanceName: Buffer.from(process.env.INSTANCE, "base64").toString(),
+        // instanceName: Buffer.from(process.env.INSTANCE, "base64").toString(),
         database: Buffer.from(process.env.DATABASE, "base64").toString(),
         rowCollectionOnDone: true,
         rowCollectionOnRequestCompletion: true,
         connectTimeout: 300000,
         requestTimeout: 300000,
         trustServerCertificate: true,
-        // port: 5081, //solo se habilita en PRD
+        port: 5081, //solo se habilita en PRD
       },
     },
     PORT: process.env.PORT || process.env.APP_PORT,

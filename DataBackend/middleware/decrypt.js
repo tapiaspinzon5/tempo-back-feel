@@ -17,4 +17,18 @@ function decryptBody(req, res, next) {
   }
 }
 
-module.exports = { decryptBody };
+function decryptANBody(req, res, next) {
+  const { data } = req.body;
+  const key = process.env.CRYPTOJS_AN_SECRET;
+
+  try {
+    req.body = JSON.parse(
+      CryptoJS.AES.decrypt(data, key).toString(CryptoJS.enc.Utf8)
+    );
+    next();
+  } catch (error) {
+    res.status(400).json({ ok: false, msg: error });
+  }
+}
+
+module.exports = { decryptBody, decryptANBody };
