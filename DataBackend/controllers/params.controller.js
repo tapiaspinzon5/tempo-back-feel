@@ -583,6 +583,12 @@ exports.parametros = (req, tipo) => {
         new SpParam("idWave", req.idWave, TYPES.Int),
       ]);
 
+    case "spInsertTransaction":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("idApp", req.idApp, TYPES.Int),
+      ]);
+
     default:
       return null;
   }
