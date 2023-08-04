@@ -188,6 +188,7 @@ module.exports = (router) => {
   MapSpRouter("/getanalytics", "spQueryAnalitycs");
   MapSpRouter("/a/posttrackevents", "spInsertEventAgent");
   MapSpRouter("/su/getanscorms", "spQuerySimulation");
+  MapSpRouter("/a/posttrackappopen", "spInsertTransaction");
 
   function MapSpRouter(route, spName) {
     router.post(route, checkJwtToken, decryptBody, (req, res) =>
