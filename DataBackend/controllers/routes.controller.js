@@ -341,6 +341,7 @@ exports.postCreateCourse = async (req, res) => {
     descCourse,
     urlImgCourse,
     private,
+    idTsat,
     activities,
   } = req.body;
   let i = 0;
@@ -379,6 +380,7 @@ exports.postCreateCourse = async (req, res) => {
             urlImgCourse,
             descCourse,
             private,
+            idTsat,
             rows,
           },
           "spInsertCourse"
@@ -706,8 +708,15 @@ exports.insertUsers = async (req, res) => {
 };
 
 exports.postCreateLP = async (req, res) => {
-  const { requestedBy, nameLP, descLP, idCampaign, idLob, coursesInfo } =
-    req.body;
+  const {
+    requestedBy,
+    nameLP,
+    descLP,
+    idCampaign,
+    idLob,
+    idTsat,
+    coursesInfo,
+  } = req.body;
   let i = 0;
 
   try {
@@ -720,7 +729,7 @@ exports.postCreateLP = async (req, res) => {
       .query(
         "spInsertLearningPlan",
         parametros(
-          { requestedBy, nameLP, descLP, idCampaign, idLob, rows },
+          { requestedBy, nameLP, descLP, idCampaign, idLob, idTsat, rows },
           "spInsertLearningPlan"
         )
       )
@@ -1406,6 +1415,99 @@ exports.getCampaignContent = async (req, res) => {
           default:
             break;
         }
+      })
+      .catch((err) => {
+        logger.error(`${err} - sp`);
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    logger.error(error);
+    responsep(2, req, res, error);
+  }
+};
+
+exports.getTsatQuestions = async (req, res) => {
+  const { idTsat } = req.body;
+
+  try {
+    sql
+      .query("spQueryTsat", parametros({ idTsat }, "spQueryTsat"))
+      .then(async (result) => {
+        const lang = [];
+        const arr1 = [];
+        const arr2 = [];
+
+        // result.forEach((el) => {
+        //   if (lang.findIndex((lg) => lg.idLTsat === el.idLTsat) === -1) {
+        //     lang.push(el);
+        //   }
+        // });
+
+        result.forEach((el) => {
+          switch (el.idLTsat) {
+            case 1:
+              arr1.push({
+                idQTsat: el.idQTsat,
+                questionTsat: el.questionTsat,
+                idLTsat: el.idLTsat,
+              });
+              break;
+
+            default:
+              arr2.push({
+                idQTsat: el.idQTsat,
+                questionTsat: el.questionTsat,
+                idLTsat: el.idLTsat,
+              });
+              break;
+          }
+        });
+
+        let objRes = {
+          idTTsat: result[0].idTTsat,
+          typeTsat: result[0].typeTsat,
+          englishQ: arr1,
+          spanishQ: arr2,
+        };
+
+        responsep(1, req, res, { Result: objRes });
+      })
+      .catch((err) => {
+        logger.error(`${err} - sp`);
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    logger.error(error);
+    responsep(2, req, res, error);
+  }
+};
+
+exports.postTsatAnswers = async (req, res) => {
+  let i = 0;
+
+  const { requestedBy, idLTsat, idTTsat, idCourse, idLP, answers } = req.body;
+
+  // idQuestion
+  // answer
+  // idLanguaje
+  // idTTsat
+  // IdCourse
+  // idLP
+  // idRegistry
+
+  let rows = answers.map(({ idQTsat, value }) => {
+    i = i + 1;
+    return [idQTsat, value, idLTsat, idTTsat, idCourse, idLP, i];
+  });
+
+  try {
+    sql
+      .query(
+        "spInsertResultsTsat",
+        parametros({ requestedBy, rows }, "spInsertResultsTsat")
+      )
+      .then(async (result) => {
+        responsep(1, req, res, result);
       })
       .catch((err) => {
         logger.error(`${err} - sp`);

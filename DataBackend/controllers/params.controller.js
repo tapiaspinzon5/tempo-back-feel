@@ -198,21 +198,29 @@ let updateUserTable = [
   },
 ];
 
-let insertLPTable = [
+let insertTsatTable = [
   {
-    name: "ident",
+    name: "idQuestion",
     type: TYPES.Int,
   },
   {
-    name: "roleUser",
-    type: TYPES.VarChar,
-  },
-  {
-    name: "idLob",
+    name: "answer",
     type: TYPES.Int,
   },
   {
-    name: "idCampaign",
+    name: "idLanguaje",
+    type: TYPES.Int,
+  },
+  {
+    name: "typeTsat",
+    type: TYPES.Int,
+  },
+  {
+    name: "IdCourse",
+    type: TYPES.Int,
+  },
+  {
+    name: "idLP",
     type: TYPES.Int,
   },
   {
@@ -368,6 +376,7 @@ exports.parametros = (req, tipo) => {
         new SpParam("urlImgCourse", req.urlImgCourse, TYPES.VarChar),
         new SpParam("descripctionCourse", req.descCourse, TYPES.VarChar),
         new SpParam("isPrivate", req.private, TYPES.Bit),
+        new SpParam("idTsat", req.idTsat, TYPES.Int),
         SpParamTable2("table", insertSuperCourseTable, req.rows),
       ]);
     case "spQueryCourses":
@@ -431,6 +440,7 @@ exports.parametros = (req, tipo) => {
         new SpParam("descripctionLP", req.descLP, TYPES.VarChar),
         new SpParam("idCampaign", req.idCampaign, TYPES.Int),
         new SpParam("idLob", req.idLob, TYPES.Int),
+        new SpParam("idTsat", req.idTsat, TYPES.Int),
         SpParamTable2("table", insertCoursesTable, req.rows),
       ]);
 
@@ -588,6 +598,15 @@ exports.parametros = (req, tipo) => {
         new SpParam("user", req.requestedBy, TYPES.VarChar),
         new SpParam("idApp", req.idApp, TYPES.Int),
       ]);
+
+    case "spInsertResultsTsat":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        SpParamTable2("table", insertTsatTable, req.rows),
+      ]);
+
+    case "spQueryTsat":
+      return parametrizacion([new SpParam("idTsat", req.idTsat, TYPES.Int)]);
 
     default:
       return null;

@@ -166,6 +166,20 @@ module.exports = (router) => {
     routes.getCampaignContent
   );
 
+  router.post(
+    "/gettsatquestions",
+    checkJwtToken,
+    decryptBody,
+    routes.getTsatQuestions
+  );
+
+  router.post(
+    "/a/posttsatanswers",
+    checkJwtToken,
+    decryptBody,
+    routes.postTsatAnswers
+  );
+
   // router.post("/prueba", decryptBody, routes.prueba);
 
   //CRUD
@@ -189,6 +203,7 @@ module.exports = (router) => {
   MapSpRouter("/a/posttrackevents", "spInsertEventAgent");
   MapSpRouter("/su/getanscorms", "spQuerySimulation");
   MapSpRouter("/a/posttrackappopen", "spInsertTransaction");
+  MapSpRouter("/gettsattypes", "spQueryTsatTypes");
 
   function MapSpRouter(route, spName) {
     router.post(route, checkJwtToken, decryptBody, (req, res) =>
