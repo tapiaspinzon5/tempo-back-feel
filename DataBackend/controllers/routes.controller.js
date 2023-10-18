@@ -400,14 +400,14 @@ exports.postCreateCourse = async (req, res) => {
 };
 
 exports.getcourses = async (req, res) => {
-  const { requestedBy, idCampaign, context, idCourse } = req.body;
+  const { requestedBy, idCampaign, context, idCourse, idLp } = req.body;
 
   try {
     sql
       .query(
         "spQueryCourses",
         parametros(
-          { requestedBy, idCampaign, context, idCourse },
+          { requestedBy, idCampaign, context, idCourse, idLp },
           "spQueryCourses"
         )
       )
@@ -461,6 +461,7 @@ exports.getcourses = async (req, res) => {
               private: e.private,
               StatusCourse: e.StatusCourse,
               UsrCreation: e.UsrCreation,
+              idTsat: e.idTsat,
               progressLastCourse: e?.progressLastCourse,
               activities: [
                 {
