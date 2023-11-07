@@ -111,21 +111,21 @@ exports.login = async (req, res) => {
   //   idccms: graphResponse.employeeId,
   //   userName: graphResponse.mailNickname,
   //   name: graphResponse.displayName,
-  //   wemail: graphResponse.onPremisesUserPrincipalName,
+  //   wemail: graphResponse.userPrincipalName,
   //   name: graphResponse.displayName,
   // };
 
   // const token = jwt.sign(
   //   {
   //     exp: Math.floor(Date.now() / 1000) + 60 * 60,
-  //     email: graphResponse.onPremisesUserPrincipalName,
+  //     email: graphResponse.userPrincipalName,
   //   },
   //   process.env.JWT_SECRET
   // );
 
   const token = generateToken(
     {
-      email: graphResponse.onPremisesUserPrincipalName,
+      email: graphResponse.userPrincipalName,
     },
     "9h"
   );
@@ -133,10 +133,7 @@ exports.login = async (req, res) => {
   sql
     .query(
       "spQueryRoleUser",
-      parametros(
-        { email: graphResponse.onPremisesUserPrincipalName },
-        "spQueryRoleUser"
-      )
+      parametros({ email: graphResponse.userPrincipalName }, "spQueryRoleUser")
     )
     .then((result2) => {
       if (result2.length == 0) {
@@ -147,7 +144,7 @@ exports.login = async (req, res) => {
         nombre: graphResponse.displayName,
         idccms: graphResponse.employeeId,
         userName: graphResponse.mailNickname,
-        email: graphResponse.onPremisesUserPrincipalName,
+        email: graphResponse.userPrincipalName,
         token,
         refreshToken: mstoken,
         // nombre: result?.data.data?.nombre,
