@@ -609,6 +609,17 @@ exports.parametros = (req, tipo) => {
     case "spQueryTsat":
       return parametrizacion([new SpParam("idTsat", req.idTsat, TYPES.Int)]);
 
+    case "spInsertTestBsptResult":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+        new SpParam("resultTest", req.resultTest, TYPES.VarChar),
+      ]);
+
+    case "spQueryBsptResults":
+      return parametrizacion([
+        new SpParam("user", req.requestedBy, TYPES.VarChar),
+      ]);
+
     default:
       return null;
   }
