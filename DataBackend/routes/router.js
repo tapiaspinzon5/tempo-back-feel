@@ -180,6 +180,13 @@ module.exports = (router) => {
     routes.postTsatAnswers
   );
 
+  router.post(
+    "/a/postinsertbsptres",
+    checkJwtToken,
+    decryptBody,
+    routes.postInsertBsptRes
+  );
+
   // router.post("/prueba", decryptBody, routes.prueba);
 
   //CRUD
@@ -204,6 +211,7 @@ module.exports = (router) => {
   MapSpRouter("/su/getanscorms", "spQuerySimulation");
   MapSpRouter("/a/posttrackappopen", "spInsertTransaction");
   MapSpRouter("/gettsattypes", "spQueryTsatTypes");
+  MapSpRouter("/a/getbsptres", "spQueryBsptResults");
 
   function MapSpRouter(route, spName) {
     router.post(route, checkJwtToken, decryptBody, (req, res) =>

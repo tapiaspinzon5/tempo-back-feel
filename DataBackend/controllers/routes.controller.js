@@ -18,6 +18,7 @@ const { checkEmails } = require("../helpers/checkEmailusers");
 const { orderAssign } = require("../helpers/orderAgentAssign");
 const { bucket } = require("../firebase/firebaseInit");
 const logger = require("../utils/logger");
+const { sendEmail } = require("../helpers/sendEmail.js");
 
 exports.CallSp = (spName, req, res) => {
   sql
@@ -1505,6 +1506,39 @@ exports.postTsatAnswers = async (req, res) => {
         parametros({ requestedBy, rows }, "spInsertResultsTsat")
       )
       .then(async (result) => {
+        responsep(1, req, res, result);
+      })
+      .catch((err) => {
+        logger.error(`${err} - sp`);
+        responsep(2, req, res, err);
+      });
+  } catch (error) {
+    logger.error(error);
+    responsep(2, req, res, error);
+  }
+};
+
+exports.postInsertBsptRes = async (req, res) => {
+  const { requestedBy, resultTest, userName } = req.body;
+
+  const emailInfo = {
+    userName,
+    resultTest,
+  };
+
+  try {
+    sql
+      .query(
+        "spInsertTestBsptResult",
+        parametros({ requestedBy, resultTest }, "spInsertTestBsptResult")
+      )
+      .then(async (result) => {
+        await sendEmail(
+          emailInfo,
+          "BSPT test result",
+          "Notification TpFeel",
+          "noresponse@teleperformance.com"
+        );
         responsep(1, req, res, result);
       })
       .catch((err) => {
