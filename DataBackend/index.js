@@ -41,6 +41,7 @@ const corsOptions = {
     "https://nestingclient.teleperformance.co",
   ],
   credentials: true,
+  methods: "GET,POST, OPTIONS",
 };
 app.use(cors(corsOptions));
 app.use((req, res, next) => {

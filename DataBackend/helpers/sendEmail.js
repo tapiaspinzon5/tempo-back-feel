@@ -61,10 +61,10 @@ exports.sendEmail = async (emailInfo, subject, header, emailSender) => {
                   <td>Dove</td>
                 </tr>
                 <tr>
-                  <td>${resultSplit[0]}</td>
-                  <td>${resultSplit[1]}</td>
-                  <td>${resultSplit[2]}</td>
-                  <td>${resultSplit[3]}</td>
+                  <td>${(resultSplit[0] / 20) * 100} %</td>
+                  <td>${(resultSplit[1] / 20) * 100} %</td>
+                  <td>${(resultSplit[2] / 20) * 100} %</td>
+                  <td>${(resultSplit[3] / 20) * 100} %</td>
                 </tr>
               </tbody>
               </table>
