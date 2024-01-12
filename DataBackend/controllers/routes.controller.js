@@ -786,6 +786,7 @@ exports.getLearningPlan = async (req, res) => {
               nameCampaign: e.nameCampaign,
               idLob: e.idLob,
               nameLob: e.nameLob,
+              idTsat: e.idTsat,
               courses: [
                 {
                   idCourse: e.idCourse,
