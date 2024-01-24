@@ -589,6 +589,7 @@ exports.postUpdateCourse = async (req, res) => {
     private,
     context,
     activities,
+    idTsat,
   } = req.body;
   let i = 0;
 
@@ -630,6 +631,7 @@ exports.postUpdateCourse = async (req, res) => {
             urlImgCourse,
             context,
             idActivity,
+            idTsat,
             rows,
           },
           "spUpdateCourse"

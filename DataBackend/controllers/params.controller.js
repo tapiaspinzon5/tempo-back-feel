@@ -410,6 +410,7 @@ exports.parametros = (req, tipo) => {
         new SpParam("urlImgCourse", req.urlImgCourse, TYPES.VarChar),
         new SpParam("idActivity", req.idActivity, TYPES.Int),
         new SpParam("context", req.context, TYPES.Int),
+        new SpParam("idTsat", req.idTsat, TYPES.Int),
         SpParamTable2("table", insertSuperCourseTable, req.rows),
       ]);
 
