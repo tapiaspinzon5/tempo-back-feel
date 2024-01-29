@@ -1084,6 +1084,14 @@ exports.postUploadFileFB = async (req, res) => {
 
       case 7:
         await bucket.upload(`${req.file.path}`, {
+          destination: `newsimulations/${req.file.filename}`,
+        });
+        delUpFile(req.file.path);
+        file = bucket.file(`newsimulations/${req.file.filename}`);
+        break;
+
+      case 8:
+        await bucket.upload(`${req.file.path}`, {
           destination: `imgMeeting/${req.file.filename}`,
         });
         delUpFile(req.file.path);
@@ -1181,11 +1189,29 @@ exports.downloadScorm = async (req, res) => {
     }
 
     const file = await get(url, folderName);
+    const htmlFiles = file.filter((el) => el.includes(".htm"));
 
-    responsep(1, req, res, {
-      status: "ok",
-      file: file.filter((el) => el.includes(".htm"))[0],
-    });
+    if (htmlFiles.length > 1) {
+      const filesSize = htmlFiles.map((el) => {
+        return {
+          file: el,
+          size: fs.statSync("./scorms/" + folderName + "/" + el).size,
+        };
+      });
+
+      const max = filesSize.reduce(function (prev, current) {
+        return prev && prev.size > current.size ? prev : current;
+      });
+      responsep(1, req, res, {
+        status: "ok",
+        file: max?.file,
+      });
+    } else {
+      responsep(1, req, res, {
+        status: "ok",
+        file: htmlFiles[0],
+      });
+    }
   } catch (error) {
     logger.error(`${error}, "Download failed"`);
     responsep(2, req, res, error);
